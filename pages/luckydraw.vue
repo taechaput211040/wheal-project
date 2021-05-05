@@ -28,7 +28,7 @@ export default {
       },
       url_savescore: "/SaveScore",
       url_getdata:
-      "/getDataWinWheel/",
+      "/getDataByToken/",
       setting: {},
       obj_score: [],
       data_post:{},

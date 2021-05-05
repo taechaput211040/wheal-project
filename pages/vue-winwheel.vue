@@ -1,185 +1,351 @@
 <template>
   <section class="vue-winwheel">
-    <VueWinwheel
-      :segments="this.dynamicOption"
-      :score="this.dynamicScore"
-      :url="url_savescore"
-      :beforeSpin="beforeSpin"
-      :dataPost="data_post"
-      :redirex="redirex"
-      :bg_wheel="this.dynamicbg_wheel"
-      ref="foo"
-    />
+    <div class="mobile-container">
+      <h1>Vue-Winwheel</h1>
+      <div class="wheel-wrapper">
+        <div class="canvas-wrapper">
+          <canvas id="canvas" width="310" height="310">
+            <p
+              style="
+                 {
+                  color: white;
+                }
+              "
+              align="center"
+            >
+              Sorry, your browser doesn't support canvas. Please try Google
+              Chrome.
+            </p>
+          </canvas>
+        </div>
+        <div class="button-wrapper">
+          <a
+            class="btn btn-play"
+            href="#"
+            @click.prevent="startSpin()"
+            v-if="!loadingPrize && !wheelSpinning"
+            >SPIN!</a>
+
+			<!-- <a
+            class="btn btn-play"
+            href="#"
+            @click.prevent="saveData()"
+            v-if="!loadingPrize && !wheelSpinning"
+            >saveData!</a> -->
+
+        </div>
+      </div>
+    </div>
+    <!-- <div class="custom-modal modal-mask" id="modalSpinwheel" v-if="modalPrize">
+				<div slot="body">
+					<a href="" @click.prevent="hidePrize()" class="modal-dismiss">
+						<i class="icon_close"></i>
+					</a>
+					<h2>
+						Yay you got the prize!!
+					</h2>
+					<h1> {{prizeName}}</h1>
+				</div>
+			</div> -->
   </section>
 </template>
 
+
 <script>
-import VueWinwheel from "vue-winwheel/vue-winwheel";
+import * as Winwheel from "~/node_modules/vue-winwheel/Winwheel.js";
 
 export default {
-  components: {
-    VueWinwheel,
+  name: "VueWinWheel",
+  props: {
+    segments: {
+      type:Array,
+      // default() {
+      //   return [
+      //     {
+      //       textFillStyle: "#fff",
+      //       fillStyle: "#000",
+      //       text: "Prize 1"
+      //     },
+      //     {
+      //       textFillStyle: "#000",
+      //       fillStyle: "#fadede",
+      //       text: "Prize 2",
+      //     },
+      //     {
+      //       textFillStyle: "#fff",
+      //       fillStyle: "#000",
+      //       text: "Prize 3",
+      //     },
+      //     {
+      //       textFillStyle: "#000",
+      //       fillStyle: "#fadede",
+      //       text: "Prize 4",
+      //     },
+      //     {
+      //       textFillStyle: "#fff",
+      //       fillStyle: "#000",
+      //       text: "Prize 5",
+      //     },
+      //     {
+      //       textFillStyle: "#000",
+      //       fillStyle: "#fadede",
+      //       text: "Prize 6",
+      //     },
+      //     {
+      //       textFillStyle: "#fff",
+      //       fillStyle: "#000",
+      //       text: "Prize 7",
+      //     },
+      //     {
+      //       textFillStyle: "#000",
+      //       fillStyle: "#fadede",
+      //       text: "Prize 8",
+      //     },
+      //   ];
+      // },
+    },
+    score: {
+      default() {
+        return 30;
+      },
+    },
+	url: {
+      default() {
+        return "www.hotmail.com";
+      },
+    },
+    beforeSpin: {
+      type: Function,
+      required: true,
+    },
   },
   data() {
     return {
-      options: [],
-      score: {
-        score:50
+      loadingPrize: false,
+      theWheel: null,
+      modalPrize: false,
+      wheelPower: 1,
+      wheelSpinning: false,
+      prizeName: "BUY 1 GET 1",
+      WinWheelOptions: {
+        textFontSize: 14,
+        outterRadius: 410,
+        innerRadius: 25,
+        lineWidth: 8,
+        animation: {
+          type: "spinOngoing",
+          duration: 0.5,
+        },
       },
-      url_savescore: "/SaveScore",
-      url_getdata:
-        "/getDataByToken/",
-      setting: {},
-      obj_score: [],
-      data_post:{},
-      redirex:"",
-      bg_wheel:""
     };
   },
-  computed: {
-    dynamicOption() {
-      return this.options;
-    },
-    dynamicScore() {
-      return this.score.score;
-    },
-    dynamicbg_wheel(){
-      return this.bg_wheel;
-    }
-  },
-  beforecreated() {},
-  async created() {
-    
-    let get = await this.GetData()
-    this.sendData();
-
-    var catl = await this.calculatorData()
-    if(catl){
-      this.SetDataPost(catl)
-    }
-
-  },
   methods: {
-    AlertPrize(indicatedSegment) {
-      console.log(indicatedSegment);
+    showPrize() {
+      this.modalPrize = true;
     },
-    async GetData() {
-      try {
-        const token = this.$route.query.token;
-        let data_setting = await this.$axios.$get(this.url_getdata+token).catch(error => {
-          if (this.$axios.isCancel(error)) {
-            console.log('Request canceled', error)
-          } else {
-            this.$swal('ไม่สามารถ ติดต่อกับ Server ได้')
-            return false
-          }
-        });
-        this.bg_wheel = process.env.API_URL+"/"+data_setting['image_luckydraw']
-        this.setting = data_setting
-        data_setting = data_setting['setting']
-        // console.log("setting ="+JSON.stringify(data_setting ))
-        let data = [];
-        if (data_setting) {
-          // console.log("setting = "+JSON.stringify(this.setting));
-          Object.keys(data_setting).forEach(function (key) {
-            // console.log("setting = "+data_setting);
-            var value = data_setting[key];
-            if (key % 2 === 0) {
-              data.push({
-                // textFillStyle: "#000",
-                // fillStyle: "#fadede",
-                text: value.title,
-                size: 32.4,
-              });
-            } else {
-              data.push({
-                // textFillStyle: "#fff",
-                // fillStyle: "#000",
-                text: value.title,
-                size: 57.6,
-              });
-            }
+    hidePrize() {
+      this.modalPrize = false;
+    },
+    beforeSpinDefault() {
+      return this.beforeSpin();
+    },
+	async saveData() {
+      const data = await this.$axios.$get(this.url);
+      console.log(data)
+    },
+    startSpin() {
+      this.beforeSpinDefault().then((result) => {
+        if (this.wheelSpinning === false) {
+          this.theWheel.startAnimation();
+          this.wheelSpinning = true;
+          this.theWheel = new Winwheel.Winwheel({
+            ...this.WinWheelOptions,
+            numSegments: this.segments.length,
+            segments: this.segments,
+			// drawMode: 'segmentImage',
+            animation: {
+              type: "spinToStop",
+              duration: 5,
+              spins: 5,
+              callbackFinished: this.onFinishSpin,
+            },
           });
-          this.options = data;
-          // console.log("data = " + JSON.stringify(this.options));
-        }else{
-          this.$swal('Token ถูกใช้งานแล้ว')
-          console.log("error = "+error)
-          // this.$router.push('/') 
-          return false;
-        }
-      } catch (error) {
 
-        this.$swal('Token ถูกใช้งานแล้ว')
-        console.log("error = "+error)
-        // this.$router.push('/') 
-        return false;
-        
-      }
-    },
-    SetDataPost(last_score){
-      this.data_post = {
-        "username": this.setting['member']['username'],
-        "agent_id": this.setting['setting'][0].agent_id,
-        "setting_id": last_score['id'],
-        "credit": last_score['credit'],
-        "type": last_score['type']
-      }
-      this.redirex = this.setting['member']['call_back']
-    },
-    beforeSpin() {
-      return new Promise((resolve, reject) => {
-        resolve(true);
+          // example input prize number get from Backend
+          // Important thing is to set the stopAngle of the animation before stating the spin.
+
+          var prizeNumber = Math.floor(Math.random() * this.segments.length); // or just get from Backend
+          var stopAt =
+            (360 / this.segments.length) * prizeNumber -
+            360 / this.segments.length / 2; // center pin
+          // var stopAt = 360 / this.segments.length * prizeNumber - Math.floor(Math.random() * 60) //random location
+
+          console.log("stopAt = " + JSON.stringify(this.score));
+          this.theWheel.animation.stopAngle = this.score;
+          this.theWheel.startAnimation();
+          this.wheelSpinning = false;
+        }
       });
     },
-    async sendData() {
-      let before = await this.beforeSpin();
-      if (before) {
-        //console.log("Spin");
+    resetWheel() {
+      this.theWheel = new Winwheel.Winwheel({
+        ...this.WinWheelOptions,
+        numSegments: this.segments.length,
+        segments: this.segments,
+		// drawMode: 'segmentImage',
+      });
+
+      if (this.wheelSpinning) {
+        this.theWheel.stopAnimation(false); // Stop the animation, false as param so does not call callback function.
       }
+
+      this.theWheel.rotationAngle = 0; // Re-set the wheel angle to 0 degrees.
+      this.theWheel.draw(); // Call draw to render changes to the wheel.
+      this.wheelSpinning = false; // Reset to false to power buttons and spin can be clicked again.
     },
-    calculatorData() {
-      // console.log("this.setting = "+JSON.stringify(this.setting['setting']))
-      let radian = 0
-      for (const key in this.options) {
-        const { size } = this.options[key];
-        const stopAt = this.randomInt(
-          parseFloat(radian),
-          parseFloat(radian) + parseFloat(size)
-        );
-        radian = radian + size;
-        if (stopAt && this.setting['setting'][key].status == 1) {
-          let json_stop = {
-            "score":stopAt,
-            "id":this.setting['setting'][key].id,
-            "credit":this.setting['setting'][key].credit,
-            "type":this.setting['setting'][key].type,
-            "award_percent":this.setting['setting'][key].award_percent,
-            }
-          this.obj_score.push(json_stop);
-        }
-      }
-      let array_award = []
-      for (const key in this.obj_score) {
-        for (var i = 0; i < this.obj_score[key].award_percent; i++) {
-          array_award.push(this.obj_score[key])
-        }
-      }
-      console.log("array_award = "+JSON.stringify(this.obj_score));
-      this.score = array_award[
-        Math.floor(Math.random() * array_award.length)
-      ];
-      return this.score
+    initSpin() {
+      this.loadingPrize = true;
+      this.resetWheel();
+      this.loadingPrize = false;
     },
-    randomInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1) + min);
+    onFinishSpin(indicatedSegment) {
+      this.prizeName = indicatedSegment.text;
+      this.showPrize();
     },
+  },
+  computed: {},
+  updated() {},
+  mounted() {
+    this.initSpin();
+    // this.resetWheel()
+  },
+  created() {
+	setTimeout(() => this.resetWheel(), 1500);
+    
   },
 };
 </script>
 
-
 <style scoped>
+.vue-winwheel {
+  text-align: center;
+  background-image: url("/static/img/obstacle-run/bg-spinner-mobile.svg");
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+}
+.vue-winwheel h1 {
+  color: #b32656;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-size: 36px;
+  line-height: 90px;
+  letter-spacing: 4px;
+  margin: 0;
+}
+.vue-winwheel h2 {
+  margin: 0;
+}
+.vue-winwheel #modalSpinwheel.custom-modal .content-wrapper .content {
+  width: calc(100vw - 30px);
+  padding-top: 52px;
+}
+.vue-winwheel #modalSpinwheel.custom-modal .content-wrapper .content h2 {
+  text-transform: uppercase;
+  color: #b32656;
+  margin-bottom: 16px;
+  margin-top: 0;
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-size: 18px;
+  letter-spacing: 1.1px;
+  margin: 0;
+}
+.vue-winwheel #modalSpinwheel.custom-modal .content-wrapper .content p {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  color: black;
+  text-align: center;
+  line-height: 25px;
+}
+.vue-winwheel #modalSpinwheel.custom-modal .content-wrapper .content p strong {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+}
+.vue-winwheel
+  #modalSpinwheel.custom-modal
+  .content-wrapper
+  .content
+  .modal-dismiss {
+  top: 12px;
+  right: 12px;
+}
+.vue-winwheel
+  #modalSpinwheel.custom-modal
+  .content-wrapper
+  .content
+  .modal-dismiss
+  i.icon_close {
+  font-size: 30px;
+  color: #da2a52;
+}
+.vue-winwheel canvas#canvas {
+  position: relative;
+}
+.vue-winwheel .canvas-wrapper {
+  position: relative;
+}
+.vue-winwheel .canvas-wrapper:after {
+  content: "";
+  display: block;
+  width: 42px;
+  background: #c4376f;
+  height: 42px;
+  position: absolute;
+  left: calc(50% - 25px);
+  margin: auto;
+  border-radius: 100%;
+  top: calc(50% - 29px);
+  border: 5px solid white;
+  box-sizing: content-box;
+}
+.vue-winwheel .canvas-wrapper:before {
+  content: "";
+  display: block;
+  width: 310px;
+  background: #0f0f0f;
+  height: 310px;
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  border-radius: 100%;
+  top: 0;
+}
+.vue-winwheel .wheel-wrapper {
+  position: relative;
+}
+.vue-winwheel .wheel-wrapper:before {
+  content: "";
+  width: 62px;
+  height: 47px;
+  position: absolute;
+  top: -10px;
+  left: calc(50% - 31px);
+  right: 0;
+  display: block;
+  z-index: 99999;
+  /* background-image: url("~/node_modules/vue-winwheel/spinner-marker.svg"); */
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center;
+}
+.vue-winwheel .wheel-wrapper .button-wrapper {
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 231px;
+  height: 118px;
+}
 .vue-winwheel .wheel-wrapper .btn.btn-play {
   padding: 0 58px !important;
   background: #c4376f;
