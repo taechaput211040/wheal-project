@@ -87,11 +87,18 @@
       <!-- <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')"
         >Close Me</b-button> -->
     </b-modal>
+
+    <div v-if="isLoading">
+      <div class="loading">Loading&#8230;</div>
+    </div>
   </section>
 </template>
 
 
 <script>
+// import Loading from "vue-loading-overlay";
+// import "vue-loading-overlay/dist/vue-loading.css";
+
 import * as Winwheel from "~/node_modules/vue-winwheel/Winwheel.js";
 import { isMobile } from "mobile-device-detect";
 
@@ -158,11 +165,13 @@ export default {
       audio: null,
       wheelImage: new Image(),
       isMobile: isMobile,
-      sound_bg: new Audio("http://localhost:8001/static/alberta.mp3"),
-      sound_reward: new Audio("http://localhost:8001/static/horn.mp3"),
+      sound_bg: new Audio(process.env.API_URL + "/static/alberta.mp3"),
+      sound_reward: new Audio(process.env.API_URL + "/static/horn.mp3"),
       fontSize: 14,
       reward_title: "",
       total_spin: 0,
+      isLoading: false,
+      fullPage: true,
     };
   },
   methods: {
@@ -229,7 +238,7 @@ export default {
     resetWheel() {
       // require("~/assets/tickticktick.mp3")
 
-      this.audio = new Audio("http://localhost:8001/static/tickticktick.mp3");
+      this.audio = new Audio(process.env.API_URL + "/static/tickticktick.mp3");
       // console.log("resetWheel");
       this.theWheel = new Winwheel.Winwheel({
         ...this.WinWheelOptions,
@@ -265,6 +274,7 @@ export default {
       this.$refs["modal_reward"].show();
     },
     onReceive() {
+      this.isLoading = true;
       this.$axios
         .post(this.url, this.dataPost[0], {
           auth: {
@@ -274,13 +284,13 @@ export default {
         })
         .then(
           (response) => {
-            console.log(response);
+            this.isLoading = false;
             // remove array frist
             this.reward.shift();
             this.dataPost.shift();
             this.$refs["modal_reward"].hide();
-            this.total_spin = this.total_spin+1;
-            console.log("this.freespin - this.total_spin = ",this.freespin - this.total_spin);
+            this.total_spin = this.total_spin + 1;
+            // console.log("this.freespin - this.total_spin = ",this.freespin - this.total_spin);
             if (this.freespin - this.total_spin > 0) {
               this.reward_title = this.reward[0].title;
               this.loadingPrize = true;
@@ -292,6 +302,7 @@ export default {
             }
           },
           (error) => {
+            this.isLoading = false;
             alert("ไม่สามารถบันทึกข้อมุลได้ กรุณาลองใหม่");
             console.log(error);
             location.reload();
@@ -325,6 +336,7 @@ export default {
       this.$refs["modal_before"].hide();
       this.playSoundBg();
       this.resetWheel();
+  
     },
     playSound(sound) {
       if (sound) {
@@ -373,6 +385,11 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.d-fix {
+    position: fixed;
+    top: 50vh;
+    left: 49vw;
+}
 .vue-winwheel {
   text-align: center;
   /* background-image: url("../assets/wheel.png"); */
@@ -588,5 +605,127 @@ export default {
   justify-content: center;
   align-content: center;
   align-items: flex-start;
+}
+
+/* Absolute Center Spinner */
+.loading {
+  position: fixed;
+  z-index: 2000;
+  height: 2em;
+  width: 2em;
+  overflow: show;
+  margin: auto;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+/* Transparent Overlay */
+.loading:before {
+  content: '';
+  display: block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+    background: radial-gradient(rgba(20, 20, 20,.8), rgba(0, 0, 0, .8));
+
+  background: -webkit-radial-gradient(rgba(20, 20, 20,.8), rgba(0, 0, 0,.8));
+}
+
+/* :not(:required) hides these rules from IE9 and below */
+.loading:not(:required) {
+  /* hide "loading..." text */
+  font: 0/0 a;
+  color: transparent;
+  text-shadow: none;
+  background-color: transparent;
+  border: 0;
+}
+
+.loading:not(:required):after {
+  content: '';
+  display: block;
+  font-size: 10px;
+  width: 1em;
+  height: 1em;
+  margin-top: -0.5em;
+  -webkit-animation: spinner 150ms infinite linear;
+  -moz-animation: spinner 150ms infinite linear;
+  -ms-animation: spinner 150ms infinite linear;
+  -o-animation: spinner 150ms infinite linear;
+  animation: spinner 150ms infinite linear;
+  border-radius: 0.5em;
+  -webkit-box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1.1em 0 0, rgba(255,255,255, 0.75) 0 1.5em 0 0, rgba(255,255,255, 0.75) -1.1em 1.1em 0 0, rgba(255,255,255, 0.75) -1.5em 0 0 0, rgba(255,255,255, 0.75) -1.1em -1.1em 0 0, rgba(255,255,255, 0.75) 0 -1.5em 0 0, rgba(255,255,255, 0.75) 1.1em -1.1em 0 0;
+box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1.1em 0 0, rgba(255,255,255, 0.75) 0 1.5em 0 0, rgba(255,255,255, 0.75) -1.1em 1.1em 0 0, rgba(255,255,255, 0.75) -1.5em 0 0 0, rgba(255,255,255, 0.75) -1.1em -1.1em 0 0, rgba(255,255,255, 0.75) 0 -1.5em 0 0, rgba(255,255,255, 0.75) 1.1em -1.1em 0 0;
+}
+
+/* Animation */
+
+@-webkit-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-moz-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@-o-keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes spinner {
+  0% {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -ms-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
 }
 </style>

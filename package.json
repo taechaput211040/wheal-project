@@ -18,6 +18,7 @@
     "nuxt": "^2.15.4",
     "nuxt-sweetalert2": "^1.0.0",
     "vue-axios": "^3.2.4",
+    "vue-loading-overlay": "^4.0.1",
     "vue-sweetalert2": "^4.2.0",
     "vue-winwheel": "^1.0.0"
   },
