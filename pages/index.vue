@@ -14,6 +14,7 @@
       :bg_wheel="this.dynamicbg_wheel"
       :status="this.dynamicStatus"
       :key="data_post.ref_token"
+      :freespin="this.dynamicFreespin"
       ref="foo"
     />
     <div class="bg_vdo">
@@ -70,6 +71,7 @@ export default {
       },
       status: 0,
       isMobile: isMobile,
+      free_spin:0
     };
   },
   computed: {
@@ -88,6 +90,10 @@ export default {
     dynamicStatus() {
       return this.status;
     },
+    dynamicFreespin() {
+      return this.free_spin;
+    },
+
   },
   beforecreated() {},
   async created() {
@@ -116,7 +122,7 @@ export default {
             }
           });
         if (data_setting) {
-          // console.log("setting ="+JSON.stringify(data_setting ))
+        //  console.log("setting =",data_setting )
           this.bg_wheel =
             process.env.API_URL + "/" + data_setting["image_luckydraw"];
           this.options = data_setting["options"];
@@ -124,7 +130,8 @@ export default {
           this.data_post = data_setting["data_post"];
           this.redirex = data_setting["call_back"];
           this.status = data_setting["status"];
-          setTimeout(() => this.$refs.foo.resetWheel(), 1500);
+          this.free_spin = data_setting["free_spin"];
+          setTimeout(() => this.$refs.foo.resetWheel(), 1000);
         } else {
           // this.$swal("Token ถูกใช้งานแล้ว");
           // console.log("error = " + error);

@@ -34,12 +34,10 @@
       </div>
     </div>
 
-    <div class="d-none">
-        <audio controls  id="sound" >
-        <source :src="require('~/assets/horn.mp3')" type="audio/mpeg">
+    <div class="footer">
+      <h2>FreeSpin : {{ freespin - this.total_spin }}</h2>
+    </div>
 
-      </audio>
-      </div>
     <!-- <div class="custom-modal modal-mask" id="modalSpinwheel" v-if="modalPrize">
 				<div slot="body">
 					<a href="" @click.prevent="hidePrize()" class="modal-dismiss">
@@ -61,10 +59,10 @@
     >
       <div class="bg_modal">
         <div class="d-block text-center">
-          <h3 v-html="reward.title"></h3>
-          <a href="">
-            <img :src="require('~/assets/btn_back.png')" alt="" />
-          </a>
+          <h3>{{ this.reward_title }}</h3>
+          <div class="pointer" @click="onReceive()">
+            <img :src="require('~/assets/btn_reward.png')" alt="" />
+          </div>
         </div>
       </div>
     </b-modal>
@@ -76,18 +74,14 @@
       modal-class="modal-bg modal_before modal-dialog-centered"
       id=""
     >
-      <div class="bg_modal ">
+      <div class="bg_modal">
         <div class="d-block text-center">
           <h3 class="px-4">
             กดคลิกที่ปุ่ม SPIN! เพื่อเริ่มปั่นกงล้อ รับเครดิตฟรี 24 ชม.
           </h3>
           <!--  -->
-          <b-button variant="success" 
-          @click="hideModal"
-          
-          >Button</b-button>
+          <b-button variant="success" @click="hideModal">OK</b-button>
           <!-- @click.prevent="playSound('http://localhost:8001/static/alberta.mp3')" -->
-
         </div>
       </div>
       <!-- <b-button class="mt-3" block @click="$bvModal.hide('bv-modal-example')"
@@ -123,13 +117,22 @@ export default {
         return "";
       },
     },
-    reward: {},
+    reward: {
+      default() {
+        return "";
+      },
+    },
     status: {
       default() {
         return 0;
       },
     },
     redirex: "",
+    freespin: {
+      default() {
+        return "";
+      },
+    },
 
     beforeSpin: {
       type: Function,
@@ -158,6 +161,8 @@ export default {
       sound_bg: new Audio("http://localhost:8001/static/alberta.mp3"),
       sound_reward: new Audio("http://localhost:8001/static/horn.mp3"),
       fontSize: 14,
+      reward_title: "",
+      total_spin: 0,
     };
   },
   methods: {
@@ -209,24 +214,21 @@ export default {
         // var stopAt = 360 / this.segments.length * prizeNumber - Math.floor(Math.random() * 60) //random location
 
         this.theWheel.wheelImage = this.wheelImage;
-        this.theWheel.animation.stopAngle = this.score;
+        this.theWheel.animation.stopAngle = this.reward[0].stopAt;
         this.theWheel.startAnimation();
         // this.wheelSpinning = false;
         this.wheelSpinning = true;
-        this.$axios.post(this.url, this.dataPost).then(
-          (response) => {
-            console.log(response);
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
+        if (this.reward[0] && this.reward[0].title) {
+          this.reward_title = this.reward[0].title;
+        } else {
+          this.reward_title = "";
+        }
       }
       // });
     },
     resetWheel() {
       // require("~/assets/tickticktick.mp3")
-      
+
       this.audio = new Audio("http://localhost:8001/static/tickticktick.mp3");
       // console.log("resetWheel");
       this.theWheel = new Winwheel.Winwheel({
@@ -253,6 +255,7 @@ export default {
       this.loadingPrize = true;
       this.resetWheel();
       this.loadingPrize = false;
+      console.log("this.freespin =", this.freespin);
     },
     onFinishSpin(indicatedSegment) {
       this.audio.pause();
@@ -260,6 +263,40 @@ export default {
       this.prizeName = indicatedSegment.text;
       this.showPrize();
       this.$refs["modal_reward"].show();
+    },
+    onReceive() {
+      this.$axios
+        .post(this.url, this.dataPost[0], {
+          auth: {
+            username: "ten",
+            password: "3900",
+          },
+        })
+        .then(
+          (response) => {
+            console.log(response);
+            // remove array frist
+            this.reward.shift();
+            this.dataPost.shift();
+            this.$refs["modal_reward"].hide();
+            this.total_spin = this.total_spin+1;
+            console.log("this.freespin - this.total_spin = ",this.freespin - this.total_spin);
+            if (this.freespin - this.total_spin > 0) {
+              this.reward_title = this.reward[0].title;
+              this.loadingPrize = true;
+              this.resetWheel();
+              this.loadingPrize = false;
+            } else {
+              location.reload();
+              // this.$nuxt.refresh();
+            }
+          },
+          (error) => {
+            alert("ไม่สามารถบันทึกข้อมุลได้ กรุณาลองใหม่");
+            console.log(error);
+            location.reload();
+          }
+        );
     },
     playSoundPin() {
       this.audio.pause();
@@ -272,14 +309,12 @@ export default {
 
       this.sound_bg.pause();
       this.sound_bg.currentTime = 0;
-      this.sound_bg.setAttribute('crossorigin', 'anonymous'); 
+      this.sound_bg.setAttribute("crossorigin", "anonymous");
       if (this.sound_bg) {
         this.sound_bg.play();
       }
     },
     playSoundReward() {
-    
-      
       this.sound_reward.pause();
       this.sound_reward.currentTime = 0;
       if (this.sound_reward) {
@@ -291,8 +326,8 @@ export default {
       this.playSoundBg();
       this.resetWheel();
     },
-    playSound (sound) {
-      if(sound) {
+    playSound(sound) {
+      if (sound) {
         var audio = new Audio(sound);
         audio.play();
       }
@@ -317,16 +352,23 @@ export default {
 
     // console.log("status = " + this.status);
 
-    this.initSpin();
-
     this.$refs["modal_before"].show();
+    // this.initSpin();
+
     // this.resetWheel()
     // this.beforeSpinDefault().then((result) => {
     // setTimeout(() => this.resetWheel(), 300);
     // });
   },
 
-  created() {},
+  created() {
+    // if('title' in this.reward[0] ){
+    //   this.reward_title = this.reward[0].title
+    // }
+    // if('title' in this.reward[0] ){
+    // }
+    // console.log("reward ",this.reward[0]);
+  },
 };
 </script>
 
@@ -497,6 +539,10 @@ export default {
     }
   }
 }
+.pointer {
+  cursor: pointer;
+  margin-top: 50vh;
+}
 
 // .modal-bg {
 //   background-image: url("../assets/bg_modal.png");
@@ -536,11 +582,11 @@ export default {
   }
 }
 
- /deep/ .modal.show  {
-  display:flex!important;
-  flex-direction:column;
-  justify-content:center;
-  align-content:center;
+/deep/ .modal.show {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
   align-items: flex-start;
 }
 </style>
