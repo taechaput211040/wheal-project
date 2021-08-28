@@ -3,20 +3,25 @@
     <div class="header">
       <img :src="require('~/assets/header2.png')" alt="" class="img-fluid" />
     </div>
-    <VueWinwheel
+    <div v-if="display">
+      <VueWinwheel
       :segments="this.dynamicOption"
       :score="this.dynamicScore"
       :url="url_savescore"
       :reward="this.dynamicReward"
       :beforeSpin="beforeSpin"
-      :dataPost="data_post"
+      :dataPost="this.dynamicData"
       :redirex="redirex"
       :bg_wheel="this.dynamicbg_wheel"
       :status="this.dynamicStatus"
-      :key="data_post.ref_token"
+    
       :freespin="this.dynamicFreespin"
       ref="foo"
     />
+    </div>
+    
+
+      <!-- :key="this.dynamicReftoken" -->
     <div class="bg_vdo">
       <video playsinline autoplay muted loop poster="" id="bgvid">
         <source :src="require('~/assets/wing.mp4')" type="video/mp4" />
@@ -48,11 +53,12 @@ export default {
       reward: {
         stopAt: 50,
       },
-      url_savescore: process.env.API_URL+"/SaveScore",
-      url_getdata: process.env.API_URL+"/getDataByToken/",
+      url_savescore: process.env.API_PROXY_URL+"/SaveScore",
       setting: {},
       obj_score: [],
-      data_post: {},
+      data_post: {
+        "ref_token":''
+      },
       redirex: "",
       bg_wheel: "",
       video: {
@@ -71,7 +77,8 @@ export default {
       },
       status: 0,
       isMobile: isMobile,
-      free_spin:0
+      free_spin:0,
+      display:false
     };
   },
   computed: {
@@ -79,7 +86,13 @@ export default {
       return this.options;
     },
     dynamicScore() {
-      return this.reward.stopAt;
+      if(this.reward){
+        return this.reward.stopAt || 0;
+      }else{
+        return ''
+      }
+      
+
     },
     dynamicbg_wheel() {
       return this.bg_wheel;
@@ -93,6 +106,19 @@ export default {
     dynamicFreespin() {
       return this.free_spin;
     },
+    dynamicReftoken(){
+      return this.data_post.ref_token
+    },
+    dynamicData(){
+      if(this.data_post){
+        return this.data_post[0]
+      }else{
+        return ''
+      } 
+      
+    }
+
+    
 
   },
   beforecreated() {},
@@ -111,8 +137,12 @@ export default {
     async GetData() {
       try {
         const token = this.$route.query.token;
+
+        // console.log("0000 ",token);
+        var url_getdata =  process.env.API_PROXY_URL+"/getDataByToken/"+token
+        
         const data_setting = await this.$axios
-          .$get(this.url_getdata + token)
+          .$get(url_getdata)
           .catch((error) => {
             if (this.$axios.isCancel(error)) {
               console.log("Request canceled", error);
@@ -122,18 +152,22 @@ export default {
             }
           });
         if (data_setting) {
+
+       
         //  console.log("setting =",data_setting )
           this.bg_wheel =
             process.env.API_URL + "/" + data_setting["image_luckydraw"];
           this.options = data_setting["options"];
           this.reward = data_setting["reward"];
           this.data_post = data_setting["data_post"];
-          this.redirex = data_setting["call_back"];
+          this.redirex = data_setting["callback_redirect"];
           this.status = data_setting["status"];
           this.free_spin = data_setting["free_spin"];
-          setTimeout(() => this.$refs.foo.resetWheel(), 1000);
+          // setTimeout(() => this.$refs.foo.resetWheel(), 1000);
+          this.display = true
         } else {
-          // this.$swal("Token ถูกใช้งานแล้ว");
+          this.display = false
+          this.$swal("Token ถูกใช้งานแล้ว");
           // console.log("error = " + error);
           // this.$router.push('/')
           return false;

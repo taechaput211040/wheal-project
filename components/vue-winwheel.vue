@@ -274,20 +274,26 @@ export default {
       this.$refs["modal_reward"].show();
     },
     onReceive() {
+
+      console.log("this.dataPost ",this.dataPost)
       this.isLoading = true;
       this.$axios
-        .post(this.url, this.dataPost[0], {
+        .post(this.url, this.dataPost, {
           auth: {
             username: "ten",
-            password: "3900",
+            password: "3900"
           },
         })
         .then(
           (response) => {
+            
+            // console.log("this.dataPost ",this.dataPost)
+            console.log("close modal")
+            console.log("response ",response);
             this.isLoading = false;
             // remove array frist
             this.reward.shift();
-            this.dataPost.shift();
+            // this.dataPost.shift();
             this.$refs["modal_reward"].hide();
             this.total_spin = this.total_spin + 1;
             // console.log("this.freespin - this.total_spin = ",this.freespin - this.total_spin);
@@ -303,9 +309,9 @@ export default {
           },
           (error) => {
             this.isLoading = false;
-            alert("ไม่สามารถบันทึกข้อมุลได้ กรุณาลองใหม่");
+            this.$swal("ไม่สามารถบันทึกข้อมุลได้ กรุณาลองใหม่");
             console.log(error);
-            location.reload();
+            // location.reload();
           }
         );
     },

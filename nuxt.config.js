@@ -2,7 +2,7 @@ export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
   ssr: false,
   server: {
-    port:"3001",
+    port: "3001",
     host: "0.0.0.0" // default: localhost
   },
   env: {
@@ -61,9 +61,28 @@ export default {
   //     pathRewrite: { "^/api/": "" }
   //   }
   // },
+  router: {
+    mode: "hash",
+    babel: {
+      plugins: [
+        ['@babel/plugin-proposal-private-methods', { loose: true }],
+      ]
+    }
+    // base: "/betkub"
+  },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+    analyze: {
+      analyzerMode: "static"
+    },
+    babel: {
+      compact: false,
+      plugins: [
+        ['@babel/plugin-proposal-private-methods', { loose: true }]
+      ]
+    },
+    maxChunkSize: 300000,
     loaders: {
       vue: {
         transformAssetUrls: {
@@ -81,10 +100,10 @@ export default {
         }
       })
     },
-    babel:{
-      plugins: [
-        ['@babel/plugin-proposal-private-methods', { loose: true }]
-      ]
-    }
+    // babel:{
+    //   plugins: [
+    //     ['@babel/plugin-proposal-private-methods', { loose: true }]
+    //   ]
+    // }
   },
 };
