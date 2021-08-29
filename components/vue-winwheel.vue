@@ -165,8 +165,8 @@ export default {
       audio: null,
       wheelImage: new Image(),
       isMobile: isMobile,
-      sound_bg: new Audio(process.env.API_URL + "/static/alberta.mp3"),
-      sound_reward: new Audio(process.env.API_URL + "/static/horn.mp3"),
+      sound_bg: new Audio("https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/20210829153536b82885fea83a4f81aec70eb5f97c0840.mp3"),
+      sound_reward: new Audio("https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/20210829153634d5d55b635d7848c4b8ec0b98dacae384.mp3"),
       fontSize: 14,
       reward_title: "",
       total_spin: 0,
@@ -238,7 +238,7 @@ export default {
     resetWheel() {
       // require("~/assets/tickticktick.mp3")
 
-      this.audio = new Audio(process.env.API_URL + "/static/tickticktick.mp3");
+      this.audio = new Audio("https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/202108291537181d53e6b561c84bb4ab33054f80ca2e27.mp3");
       // console.log("resetWheel");
       this.theWheel = new Winwheel.Winwheel({
         ...this.WinWheelOptions,
