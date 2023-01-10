@@ -792,6 +792,7 @@ export default {
   background-size: 100%;
   width: 600px;
   height: 400px;
+  border: none;
 }
 
 /deep/ .modal.show {
