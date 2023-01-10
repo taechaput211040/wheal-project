@@ -51,6 +51,7 @@
         :status="this.dynamicStatus"
         :bycredit_amount="this.bycredit_amount"
         :freespin="this.dynamicFreespin"
+        @buy-event="refresh"
         ref="foo"
       />
       </div>
@@ -220,6 +221,11 @@ export default {
         // this.$router.push('/')
         return false;
       }
+    },
+    refresh(){
+      console.log('buy a spin');
+      console.log('call api');
+      console.log('refresh -> get new data');
     },
     beforeSpin() {
       return new Promise((resolve, reject) => {

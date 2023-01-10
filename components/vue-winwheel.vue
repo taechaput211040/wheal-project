@@ -58,14 +58,12 @@
           status : {{status}}
             <img :src="require('~/assets/BTN-bye.png')" alt="" />
           </a> -->
-          <a
+          <div
             class="btn px-0 py-0"
-            href="#"
-            @click.prevent="startSpin()"
             v-if="freespin == 0"
           >
-            <img :src="require('~/assets/BTN-bye.png')" alt="" />
-          </a>
+            <img :src="require('~/assets/BTN-bye.png')" alt="" @click="showBuy" />
+          </div>
           <a class="btn px-0 py-0" :href="this.redirex" v-if="freespin !== 0">
             <img :src="require('~/assets/BTN-back.png')" alt="" />
           </a>
@@ -107,8 +105,29 @@
       <div class="bg_modal my-auto">
         <div class="d-block text-center">
           <h3>{{ this.reward_title }}</h3>
-          <div class="pointer" @click="onReceive()">
+          <div @click="buySpin">
             <img :src="require('~/assets/btn_reward.png')" alt="" />
+          </div>
+          <div @click="hideBuy">
+            <img :src="require('~/assets/btn_reward.png')" alt="" />
+          </div>
+        </div>
+      </div>
+    </b-modal>
+    <b-modal
+      ref="modal_buy"
+      hide-footer
+      hide-header
+      centered
+      modal-class="modal_buy"
+      id=""
+    >
+      <div class="bg_modal my-auto">
+        <div class="d-block text-center">
+          <h3> ซื้อ spin </h3>
+          <div class="d-flex justify-content-center">
+            <img @click="buySpin" :src="require('~/assets/BTN-bye.png')" alt="" />
+            <img @click="hideBuy" :src="require('~/assets/BTN-cancle.png')" alt="" />
           </div>
         </div>
       </div>
@@ -201,6 +220,7 @@ export default {
       loadingPrize: false,
       theWheel: null,
       modalPrize: false,
+      modalBuy: false,
       wheelPower: 1,
       wheelSpinning: false,
       prizeName: "BUY 1 GET 1",
@@ -233,6 +253,20 @@ export default {
     },
     hidePrize() {
       this.modalPrize = false;
+    },
+    showBuy(){
+      this.modalBuy = true;
+      console.log('show buy popup')
+      this.$refs["modal_buy"].show();
+    },
+    hideBuy(){
+      this.modalBuy = false;
+      this.$refs["modal_buy"].hide();
+    },
+    buySpin(){
+      this.freespin += 1;
+      this.$refs["modal_buy"].hide();
+      this.$emit('buy-event');
     },
     beforeSpinDefault() {
       return this.beforeSpin();
@@ -290,8 +324,6 @@ export default {
     },
     resetWheel() {
       // require("~/assets/tickticktick.mp3")
-      console.log('in reset');
-      console.log(window.screen.height);
       window.screen.width < 320 || window.screen.height < 770 ? this.verySmallPhone = true : this.verySmallPhone = false;
       window.screen.width < 768 ? this.smallerThanIPAD = true : this.smallerThanIPAD = false;
       // console.log(this.isMobile);
@@ -605,6 +637,8 @@ export default {
   justify-content: center;
   width: 231px;
   height: 118px;
+  z-index: 10;
+  position: relative;
 }
 .vue-winwheel-component .wheel-wrapper .btn.btn-play {
   padding: 0 58px !important;
@@ -640,9 +674,58 @@ export default {
     }
   }
 }
+.modal_buy {
+  h3 {
+    margin-top: 30%;
+    padding-bottom: 15%;
+    color: white;
+  }
+  img {
+    width: 170px;
+  }
+}
 .pointer {
   cursor: pointer;
   margin-top: 50%;
+}
+@media(max-height: 770px) {
+  .vue-winwheel-component .canvas-wrapper:before {
+    content: "";
+    display: block;
+    width: 300px;
+    background: #0f0f0f;
+    height: 300px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    border-radius: 100%;
+    top: 0;
+  }
+  .vue-winwheel-component .wheel-wrapper .button-wrapper {
+    margin: -135px auto 0px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 231px;
+    height: 118px;
+  }
+}
+@media (max-width: 500px){
+  .modal_buy {
+    h3 {
+      font-size: 20px;
+      margin-top: 30%;
+      padding-bottom: 13%;
+    }
+    img {
+      width: 100px;
+    }
+  }
+  .modal-dialog .modal-md .modal-dialog-centered{
+    margin: auto;
+  }
 }
 
 @media(max-width: 320px) {
@@ -661,30 +744,6 @@ export default {
   }
   .vue-winwheel-component .wheel-wrapper .button-wrapper {
     margin: -150px auto 0px auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 231px;
-    height: 118px;
-  }
-}
-@media(max-height: 770px) {
-  .vue-winwheel-component .canvas-wrapper:before {
-    content: "";
-    display: block;
-    width: 300px;
-    background: #0f0f0f;
-    height: 300px;
-    position: absolute;
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    border-radius: 100%;
-    top: 0;
-  }
-  .vue-winwheel-component .wheel-wrapper .button-wrapper {
-    margin: -135px auto 0px auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -728,6 +787,21 @@ export default {
   background: inherit;
 }
 
+/deep/.modal_buy .modal-content{
+  background: url("../assets/modal-purchase-confirm.png");
+  background-size: 100%;
+  width: 600px;
+  height: 400px;
+}
+
+/deep/ .modal.show {
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-content: center;
+  align-items: flex-start;
+}
+
 @media (min-width: 768px) {
   /deep/.modal_reward .modal-dialog {
     margin: auto;
@@ -743,13 +817,26 @@ export default {
   }
 }
 
-/deep/ .modal.show {
-  display: flex !important;
-  flex-direction: column;
-  justify-content: center;
-  align-content: center;
-  align-items: flex-start;
+@media (max-width: 500px) {
+  /deep/.modal_buy .modal-content{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: url("../assets/modal-purchase-confirm.png");
+    background-size: 100%;
+    width: 300px;
+    height: 240px;
+  }
+  /deep/ .modal.show {
+    display: flex !important;
+    flex-direction: row;
+    justify-content: center;
+    align-content: center;
+    align-items: flex-start;
+  }
 }
+
+
 
 /* Absolute Center Spinner */
 .loading {
