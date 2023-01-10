@@ -1,27 +1,38 @@
 <template>
-  <section class="vue-winwheel">
+  <section class="vue-winwheel-component">
     <div class="mobile-container">
       <!-- <h1>Vue-Winwheel</h1> -->
 
       <div class="wheel-wrapper">
         <div class="canvas-wrapper">
-          <canvas id="canvas" width="300" height="300" v-if="isMobile">
+          <canvas id="canvas" width="300" height="300" v-if="smallerThanIPAD">
           </canvas>
-          <canvas id="canvas" width="450" height="450" v-if="!isMobile">
+          <div class="spin_button" v-if="smallerThanIPAD">
+            <img :src="require('~/assets/BTN-spin.png')" alt='spin button' v-if="status"/>
+            <img :src="require('~/assets/BTN-non-spin.png')" alt='spin button' v-if="!status"/>
+          </div>
+          <canvas id="canvas" width="450" height="450" v-if="!smallerThanIPAD">
           </canvas>
+          <div class="spin_button" v-if="!smallerThanIPAD">
+            <img :src="require('~/assets/BTN-spin.png')" alt='spin button' v-if="status"/>
+            <img :src="require('~/assets/BTN-non-spin.png')" alt='spin button' v-if="!status"/>
+          </div>
+          <!-- <div style="transform: translate(0px, -250px);">middle</div> /-->
         </div>
         <div class="button-wrapper">
+          <div class="buyspin" v-if="!status">
+            ซื้อฟรีสปิน {{bycredit_amount}} เครดิต
+          </div>
           <a
             class="btn px-0 py-0"
             href="#"
             @click.prevent="startSpin()"
             v-if="!loadingPrize && !wheelSpinning && status == 0"
           >
-            <img :src="require('~/assets/btn_spin.png')" alt="" />
+            <img :src="require('~/assets/BTN-bye.png')" alt="" />
           </a>
-
           <a class="btn px-0 py-0" :href="this.redirex" v-if="status == 1">
-            <img :src="require('~/assets/btn_back.png')" alt="" />
+            <img :src="require('~/assets/BTN-back.png')" alt="" />
           </a>
 
           <!-- <a
@@ -34,9 +45,9 @@
       </div>
     </div>
 
-    <div class="footer">
+    <!-- <div class="footer">
       <h2>FreeSpin : {{ freespin - this.total_spin }}</h2>
-    </div>
+    </div> -->
 
     <!-- <div class="custom-modal modal-mask" id="modalSpinwheel" v-if="modalPrize">
 				<div slot="body">
@@ -145,6 +156,9 @@ export default {
       type: Function,
       required: true,
     },
+    bycredit_amount: {
+      tyoe: Number
+    }
   },
   data() {
     return {
@@ -156,6 +170,7 @@ export default {
       prizeName: "BUY 1 GET 1",
       WinWheelOptions: {
         textFontSize: 20,
+        textFillStyle: "#fff",
         outterRadius: 410,
         innerRadius: 25,
         lineWidth: 8,
@@ -172,6 +187,7 @@ export default {
       total_spin: 0,
       isLoading: false,
       fullPage: true,
+      smallerThanIPAD: false,
     };
   },
   methods: {
@@ -237,6 +253,10 @@ export default {
     },
     resetWheel() {
       // require("~/assets/tickticktick.mp3")
+      console.log('in reset');
+      window.screen.width < 768 ? this.smallerThanIPAD = true : this.smallerThanIPAD = false;
+      // console.log(this.isMobile);
+      // console.log(this.smallerThanIPAD);
 
       this.audio = new Audio("https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/202108291537181d53e6b561c84bb4ab33054f80ca2e27.mp3");
       // console.log("resetWheel");
@@ -245,6 +265,7 @@ export default {
         numSegments: this.segments.length,
         segments: this.segments,
         textFontSize: this.fontSize,
+        textFillStyle: "#fff",
         // drawMode: 'segmentImage',
         drawMode: "image",
         drawText: true,
@@ -286,7 +307,7 @@ export default {
         })
         .then(
           (response) => {
-            
+
             // console.log("this.dataPost ",this.dataPost)
             console.log("close modal")
             console.log("response ",response);
@@ -342,7 +363,7 @@ export default {
       this.$refs["modal_before"].hide();
       this.playSoundBg();
       this.resetWheel();
-  
+
     },
     playSound(sound) {
       if (sound) {
@@ -361,11 +382,12 @@ export default {
   // },
   mounted() {
     this.wheelImage = new Image();
-    if (isMobile) {
-      this.wheelImage.src = require("~/assets/wheel_2.png");
+    window.screen.width < 768 ? this.smallerThanIPAD = true : this.smallerThanIPAD = false;
+    if (this.smallerThanIPAD) {
+      this.wheelImage.src = require("~/assets/FT-wheel-mb.png");
     } else {
       this.fontSize = 26;
-      this.wheelImage.src = require("~/assets/wheel_m.png");
+      this.wheelImage.src = require("~/assets/FT-wheel-dt.png");
     }
 
     // console.log("status = " + this.status);
@@ -396,16 +418,13 @@ export default {
     top: 50vh;
     left: 49vw;
 }
-.vue-winwheel {
+.vue-winwheel-component {
   text-align: center;
-  /* background-image: url("../assets/wheel.png"); */
+  // background-image: url("../assets/wheel.png");
   /* background-image: url("../assets/wing.mp4"); */
 
-  background-size: cover;
-  background-position: center bottom;
-  background-repeat: no-repeat;
 }
-.vue-winwheel h1 {
+.vue-winwheel-component h1 {
   color: #b32656;
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   font-size: 36px;
@@ -413,14 +432,14 @@ export default {
   letter-spacing: 4px;
   margin: 0;
 }
-.vue-winwheel h2 {
+.vue-winwheel-component h2 {
   margin: 0;
 }
-.vue-winwheel #modalSpinwheel.custom-modal .content-wrapper .content {
+.vue-winwheel-component #modalSpinwheel.custom-modal .content-wrapper .content {
   width: calc(100vw - 30px);
   padding-top: 52px;
 }
-.vue-winwheel #modalSpinwheel.custom-modal .content-wrapper .content h2 {
+.vue-winwheel-component #modalSpinwheel.custom-modal .content-wrapper .content h2 {
   text-transform: uppercase;
   color: #b32656;
   margin-bottom: 16px;
@@ -430,17 +449,17 @@ export default {
   letter-spacing: 1.1px;
   margin: 0;
 }
-.vue-winwheel #modalSpinwheel.custom-modal .content-wrapper .content p {
+.vue-winwheel-component #modalSpinwheel.custom-modal .content-wrapper .content p {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   font-size: 14px;
   color: black;
   text-align: center;
   line-height: 25px;
 }
-.vue-winwheel #modalSpinwheel.custom-modal .content-wrapper .content p strong {
+.vue-winwheel-component #modalSpinwheel.custom-modal .content-wrapper .content p strong {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
 }
-.vue-winwheel
+.vue-winwheel-component
   #modalSpinwheel.custom-modal
   .content-wrapper
   .content
@@ -448,7 +467,7 @@ export default {
   top: 12px;
   right: 12px;
 }
-.vue-winwheel
+.vue-winwheel-component
   #modalSpinwheel.custom-modal
   .content-wrapper
   .content
@@ -457,13 +476,13 @@ export default {
   font-size: 30px;
   color: #da2a52;
 }
-.vue-winwheel canvas#canvas {
+.vue-winwheel-component canvas#canvas {
   position: relative;
 }
-.vue-winwheel .canvas-wrapper {
+.vue-winwheel-component .canvas-wrapper {
   position: relative;
 }
-.vue-winwheel .canvas-wrapper:after {
+.vue-winwheel-component .canvas-wrapper:after {
   content: "";
   display: block;
   width: 42px;
@@ -477,7 +496,8 @@ export default {
   /* border: 5px solid white; */
   box-sizing: content-box;
 }
-.vue-winwheel .canvas-wrapper:before {
+
+.vue-winwheel-component .canvas-wrapper:before {
   content: "";
   display: block;
   width: 300px;
@@ -490,20 +510,35 @@ export default {
   border-radius: 100%;
   top: 0;
 }
-@media (min-width: 980px) {
-  .vue-winwheel .canvas-wrapper:before {
+
+.spin_button{
+  transform: translate( 0px, -220px);
+}
+
+.spin_button img{
+  width: 133px;
+  height: auto;
+}
+@media (min-width: 768px) {
+  .vue-winwheel-component .canvas-wrapper:before {
     width: 450px;
     height: 450px;
   }
-  .vue-winwheel {
-    margin-top: 14vw;
+
+  .spin_button{
+    transform: translate( 0px, -330px);
+  }
+
+  .spin_button img{
+    width: 200px;
+    height: auto;
   }
 }
 
-.vue-winwheel .wheel-wrapper {
+.vue-winwheel-component .wheel-wrapper {
   position: relative;
 }
-.vue-winwheel .wheel-wrapper:before {
+.vue-winwheel-component .wheel-wrapper:before {
   content: "";
   width: 62px;
   height: 47px;
@@ -513,14 +548,14 @@ export default {
   right: 0;
   display: block;
   z-index: 999;
-  background-image: url("../assets/triangle.png");
+  background-image: url("../assets/FT-point.png");
   /* background-image: url("~/node_modules/vue-winwheel/spinner-marker.svg"); */
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
-.vue-winwheel .wheel-wrapper .button-wrapper {
-  margin: 0 auto;
+.vue-winwheel-component .wheel-wrapper .button-wrapper {
+  margin: -100px auto 0px auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -528,7 +563,7 @@ export default {
   width: 231px;
   height: 118px;
 }
-.vue-winwheel .wheel-wrapper .btn.btn-play {
+.vue-winwheel-component .wheel-wrapper .btn.btn-play {
   padding: 0 58px !important;
   background: #c4376f;
   height: 40px;
@@ -574,6 +609,13 @@ export default {
 
 
 <style scoped>
+.buyspin{
+  background: #fd572a;
+  color: #fff;
+  padding: 3px 30px;
+  border-radius: 50px;
+}
+
 /deep/.modal_reward .modal-dialog {
   background-image: url("../assets/bg_modal.png");
   background-size: 100%;
@@ -593,7 +635,7 @@ export default {
   background: inherit;
 }
 
-@media (min-width: 980px) {
+@media (min-width: 768px) {
   /deep/.modal_reward .modal-dialog {
     margin: auto;
   }
@@ -602,6 +644,9 @@ export default {
   }
   .bg_modal a {
     bottom: 10vw;
+  }
+  .vue-winwheel-component .wheel-wrapper .button-wrapper {
+    margin: -180px auto 0px auto;
   }
 }
 
