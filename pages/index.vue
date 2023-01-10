@@ -1,56 +1,59 @@
 <template>
   <section class="vue-winwheel" id="home">
-    <!-- currency -->
-    <div class="navigator">
-      <div class="d-flex" >
-        <div class="col-3">
-          <a :href="redirex" v-if="!status">
-            <img
-              :src="require('~/assets/FT-icon-back-arrow.png')"
-              class="back"
-              @click="redirex"
-            />
-          </a>
-        </div>
-        <div class="col-9 px-0">
-          <div class="d-flex justify-content-end">
-            <div class="d-flex currency_bg" style="position: relative;">
-              <img src="~/assets/FT-wheel-mb.png" width="30" height="30" />
-              <div class="content col">รอบสปิน : {{status ? '1': '0'}}</div>
-            </div>
+    <!-- pc frame -->
+      <div class="backgroundFrame">
+      <!-- currency -->
+      <div class="navigator">
+        <div class="d-flex" >
+          <div class="col-3">
+            <a :href="redirex" v-if="free_spin == 0">
+              <img
+                :src="require('~/assets/FT-icon-back-arrow.png')"
+                class="back"
+                @click="redirex"
+              />
+            </a>
           </div>
-          <div class="d-flex justify-content-end pt-2">
-            <div class="d-flex currency_bg" style="position: relative;">
-              <img src="~/assets/FT-icon-coin.png" width="30" height="30" />
-              <div class="content col">เครดิต : {{credit}}</div>
+          <div class="col-9 px-0">
+            <div class="d-flex justify-content-end">
+              <div class="d-flex currency_bg" style="position: relative;">
+                <img src="~/assets/FT-wheel-mb.png" width="30" height="30" />
+                <div class="content col">รอบสปิน : {{free_spin}}</div>
+              </div>
+            </div>
+            <div class="d-flex justify-content-end pt-2">
+              <div class="d-flex currency_bg" style="position: relative;">
+                <img src="~/assets/FT-icon-coin.png" width="30" height="30" />
+                <div class="content col">เครดิต : {{credit}}</div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-    <!-- new header -->
-    <div class="header2">
-      <img :src="require('~/assets/header2.png')" alt="" class="img-fluid" />
-    </div>
-    <!-- <div class="header">
-      <img :src="require('~/assets/header2.png')" alt="" class="img-fluid" />
-    </div> -->
-    <!-- spinner -->
-    <div v-if="display" class="spinner-padding">
-      <VueWinwheel
-      :segments="this.dynamicOption"
-      :score="this.dynamicScore"
-      :url="url_savescore"
-      :reward="this.dynamicReward"
-      :beforeSpin="beforeSpin"
-      :dataPost="this.dynamicData"
-      :redirex="redirex"
-      :bg_wheel="this.dynamicbg_wheel"
-      :status="this.dynamicStatus"
-      :bycredit_amount="this.bycredit_amount"
-      :freespin="this.dynamicFreespin"
-      ref="foo"
-    />
+      <!-- new header -->
+      <div class="header2">
+        <img :src="require('~/assets/header2.png')" alt="" class="img-fluid" />
+      </div>
+      <!-- <div class="header">
+        <img :src="require('~/assets/header2.png')" alt="" class="img-fluid" />
+      </div> -->
+      <!-- spinner -->
+      <div v-if="display" class="spinner-padding">
+        <VueWinwheel
+        :segments="this.dynamicOption"
+        :score="this.dynamicScore"
+        :url="url_savescore"
+        :reward="this.dynamicReward"
+        :beforeSpin="beforeSpin"
+        :dataPost="this.dynamicData"
+        :redirex="redirex"
+        :bg_wheel="this.dynamicbg_wheel"
+        :status="this.dynamicStatus"
+        :bycredit_amount="this.bycredit_amount"
+        :freespin="this.dynamicFreespin"
+        ref="foo"
+      />
+      </div>
     </div>
 
 
@@ -235,6 +238,12 @@ export default {
 
 
 <style lang="scss" scoped>
+.backgroundFrame{
+  width: 600px;
+  height: 100vh;
+  background: #00000080;
+  margin: 0 auto;
+}
 .bg_vdo {
   position: absolute;
   top: 0;
@@ -242,9 +251,9 @@ export default {
   height: auto;
   z-index: -50;
   video {
-    overflow: hidden;
+    // overflow: hidden;
     width: 100%;
-    height: 100vh;
+    height: 100%;
   }
 }
 .vue-winwheel  {
@@ -266,7 +275,10 @@ export default {
 .navigator {
   width: 500px;
   z-index: 1001;
-  margin: 5vh auto 2vh auto;
+  // padding: 5vh auto 2vh auto;
+  padding-top: 5vh;
+  padding-bottom: 2vh;
+  margin: 0 auto;
   .back {
     width: 70px;
   }
@@ -394,6 +406,10 @@ export default {
 }
 
 @media (max-width: 500px) {
+  .backgroundFrame{
+    width: 100%;
+    background: unset;
+  }
   .navigator{
     width: 320px;
     .back{
@@ -402,11 +418,34 @@ export default {
   }
   .header2{
     img{
-      width: 220px;
+      width: 180px;
     }
   }
   .spinner-padding{
     transform: translate(0px, 10px);
+  }
+
+}
+@media (max-width: 360px) {
+  .backgroundFrame{
+    width: 100%;
+    background: unset;
+  }
+  .navigator{
+    position: relative;
+    width: 320px;
+    .back{
+      width: 60px;
+    }
+  }
+  .header2{
+    transform: translate(0px, -20px);
+    img{
+      width: 160px;
+    }
+  }
+  .spinner-padding{
+    transform: translate(0px, 0px);
   }
 
 }

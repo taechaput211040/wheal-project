@@ -5,33 +5,68 @@
 
       <div class="wheel-wrapper">
         <div class="canvas-wrapper">
-          <canvas id="canvas" width="300" height="300" v-if="smallerThanIPAD">
+          <!-- width 320 && height 770 **** very small\old phone-->
+          <canvas id="canvas" width="300" height="300" v-if="smallerThanIPAD  && verySmallPhone">
           </canvas>
-          <div class="spin_button" v-if="smallerThanIPAD">
-            <img :src="require('~/assets/BTN-spin.png')" alt='spin button' v-if="status"/>
-            <img :src="require('~/assets/BTN-non-spin.png')" alt='spin button' v-if="!status"/>
+          <div class="spin_button" v-if="smallerThanIPAD  && verySmallPhone">
+            <img
+              :src="require('~/assets/BTN-spin.png')"
+              alt='spin button'
+              v-if="freespin != 0"
+              @click="startSpin"
+            />
+            <img :src="require('~/assets/BTN-non-spin.png')" style="width=100%; height:auto;" alt='spin button' v-if="freespin == 0"/>
           </div>
+          <!-- 375 > width > 768-->
+          <canvas id="canvas" width="320" height="320" v-if="smallerThanIPAD && !verySmallPhone">
+          </canvas>
+          <div class="spin_button" v-if="smallerThanIPAD && !verySmallPhone">
+            <img
+              :src="require('~/assets/BTN-spin.png')"
+              alt='spin button'
+              v-if="freespin != 0"
+              @click="startSpin"
+            />
+            <img :src="require('~/assets/BTN-non-spin.png')" style="width=100%; height:auto;" alt='spin button' v-if="freespin == 0"/>
+          </div>
+          <!-- ipad or larger screen -->
           <canvas id="canvas" width="450" height="450" v-if="!smallerThanIPAD">
           </canvas>
           <div class="spin_button" v-if="!smallerThanIPAD">
-            <img :src="require('~/assets/BTN-spin.png')" alt='spin button' v-if="status"/>
-            <img :src="require('~/assets/BTN-non-spin.png')" alt='spin button' v-if="!status"/>
+            <img
+              :src="require('~/assets/BTN-spin.png')"
+              alt='spin button'
+              v-if="freespin != 0"
+              @click="startSpin"
+            />
+            <img :src="require('~/assets/BTN-non-spin.png')" alt='spin button' v-if="freespin == 0"/>
           </div>
           <!-- <div style="transform: translate(0px, -250px);">middle</div> /-->
         </div>
         <div class="button-wrapper">
-          <div class="buyspin" v-if="!status">
+          <div class="buyspin" v-if="freespin == 0">
             ซื้อฟรีสปิน {{bycredit_amount}} เครดิต
           </div>
-          <a
+          <!-- <a
             class="btn px-0 py-0"
             href="#"
             @click.prevent="startSpin()"
             v-if="!loadingPrize && !wheelSpinning && status == 0"
           >
+          loadingPrize: {{loadingPrize}}
+          wheelSpinning: {{wheelSpinning}}
+          status : {{status}}
+            <img :src="require('~/assets/BTN-bye.png')" alt="" />
+          </a> -->
+          <a
+            class="btn px-0 py-0"
+            href="#"
+            @click.prevent="startSpin()"
+            v-if="freespin == 0"
+          >
             <img :src="require('~/assets/BTN-bye.png')" alt="" />
           </a>
-          <a class="btn px-0 py-0" :href="this.redirex" v-if="status == 1">
+          <a class="btn px-0 py-0" :href="this.redirex" v-if="freespin !== 0">
             <img :src="require('~/assets/BTN-back.png')" alt="" />
           </a>
 
@@ -65,10 +100,11 @@
       ref="modal_reward"
       hide-footer
       hide-header
-      modal-class="modal-bg modal_reward"
+      centered
+      modal-class="modal-bg modal_reward "
       id=""
     >
-      <div class="bg_modal">
+      <div class="bg_modal my-auto">
         <div class="d-block text-center">
           <h3>{{ this.reward_title }}</h3>
           <div class="pointer" @click="onReceive()">
@@ -188,6 +224,7 @@ export default {
       isLoading: false,
       fullPage: true,
       smallerThanIPAD: false,
+      verySmallPhone: false
     };
   },
   methods: {
@@ -254,6 +291,8 @@ export default {
     resetWheel() {
       // require("~/assets/tickticktick.mp3")
       console.log('in reset');
+      console.log(window.screen.height);
+      window.screen.width < 320 || window.screen.height < 770 ? this.verySmallPhone = true : this.verySmallPhone = false;
       window.screen.width < 768 ? this.smallerThanIPAD = true : this.smallerThanIPAD = false;
       // console.log(this.isMobile);
       // console.log(this.smallerThanIPAD);
@@ -382,10 +421,14 @@ export default {
   // },
   mounted() {
     this.wheelImage = new Image();
+    window.screen.width < 320 || window.screen.height < 770 ? this.verySmallPhone = true : this.verySmallPhone = false;
     window.screen.width < 768 ? this.smallerThanIPAD = true : this.smallerThanIPAD = false;
-    if (this.smallerThanIPAD) {
+    if (this.smallerThanIPAD  && this.verySmallPhone) {
+      this.wheelImage.src = require("~/assets/FT-wheel-mb-xs.png");
+    }else if(this.smallerThanIPAD  && !this.verySmallPhone){
       this.wheelImage.src = require("~/assets/FT-wheel-mb.png");
-    } else {
+    }
+    else {
       this.fontSize = 26;
       this.wheelImage.src = require("~/assets/FT-wheel-dt.png");
     }
@@ -500,9 +543,9 @@ export default {
 .vue-winwheel-component .canvas-wrapper:before {
   content: "";
   display: block;
-  width: 300px;
+  width: 320px;
   background: #0f0f0f;
-  height: 300px;
+  height: 320px;
   position: absolute;
   left: 0;
   right: 0;
@@ -583,7 +626,7 @@ export default {
 .modal_reward {
   .bg_modal {
     h3 {
-      margin-top: 30vw;
+      margin-top: 30%;
     }
     a {
       width: 100%;
@@ -599,7 +642,56 @@ export default {
 }
 .pointer {
   cursor: pointer;
-  margin-top: 50vh;
+  margin-top: 50%;
+}
+
+@media(max-width: 320px) {
+  .vue-winwheel-component .canvas-wrapper:before {
+    content: "";
+    display: block;
+    width: 300px;
+    background: #0f0f0f;
+    height: 300px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    border-radius: 100%;
+    top: 0;
+  }
+  .vue-winwheel-component .wheel-wrapper .button-wrapper {
+    margin: -150px auto 0px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 231px;
+    height: 118px;
+  }
+}
+@media(max-height: 770px) {
+  .vue-winwheel-component .canvas-wrapper:before {
+    content: "";
+    display: block;
+    width: 300px;
+    background: #0f0f0f;
+    height: 300px;
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    border-radius: 100%;
+    top: 0;
+  }
+  .vue-winwheel-component .wheel-wrapper .button-wrapper {
+    margin: -135px auto 0px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 231px;
+    height: 118px;
+  }
 }
 
 // .modal-bg {
@@ -619,17 +711,18 @@ export default {
 /deep/.modal_reward .modal-dialog {
   background-image: url("../assets/bg_modal.png");
   background-size: 100%;
+  background-repeat: no-repeat;
+  background-position: center;
   z-index: 100000;
   position: unset;
   width: 100%;
-  margin: 0;
+  margin: auto;
 }
 
 /deep/.modal_reward .modal-content {
   background-color: inherit;
   border: inherit;
   color: white;
-  height: 100vh;
 }
 .bg_modal {
   background: inherit;
@@ -639,9 +732,9 @@ export default {
   /deep/.modal_reward .modal-dialog {
     margin: auto;
   }
-  /deep/.modal_reward .bg_modal h3 {
+  /* /deep/.modal_reward .bg_modal h3 {
     margin-top: 9vw;
-  }
+  } */
   .bg_modal a {
     bottom: 10vw;
   }
