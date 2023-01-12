@@ -24,7 +24,7 @@
             <div class="d-flex justify-content-end pt-2">
               <div class="d-flex currency_bg" style="position: relative;">
                 <img src="~/assets/FT-icon-coin.png" width="30" height="30" />
-                <div class="content col">เครดิต : {{credit}}</div>
+                <div class="content col">เครดิต : {{amount}}</div>
               </div>
             </div>
           </div>
@@ -43,13 +43,16 @@
         :segments="this.dynamicOption"
         :score="this.dynamicScore"
         :url="url_savescore"
+        :buyURL="this.url_buyspin"
+        :buyToken="this.$route.query.token"
+        :buy_feature="this.buy_feature"
         :reward="this.dynamicReward"
         :beforeSpin="beforeSpin"
         :dataPost="this.dynamicData"
         :redirex="redirex"
         :bg_wheel="this.dynamicbg_wheel"
         :status="this.dynamicStatus"
-        :bycredit_amount="this.bycredit_amount"
+        :buy_amount="this.buy_amount"
         :freespin="this.dynamicFreespin"
         @buy-event="refresh"
         ref="foo"
@@ -91,6 +94,7 @@ export default {
         stopAt: 50,
       },
       url_savescore: process.env.API_PROXY_URL+"/SaveScore",
+      url_buyspin: process.env.API_PROXY_URL+"/BuyLuckydraw",
       setting: {},
       obj_score: [],
       data_post: {
@@ -112,10 +116,11 @@ export default {
           loop: true,
         },
       },
-      credit: 200,
+      amount: 200,
       status: 0,
       bycredit_amoun: 0,
-      bycredit_amount: 100,
+      buy_feature: false,
+      by_amount: 100,
       // isMobile: isMobile,
       free_spin:0,
       display:false
@@ -155,7 +160,6 @@ export default {
       }else{
         return ''
       }
-
     }
 
 
@@ -203,9 +207,10 @@ export default {
           this.redirex = data_setting["callback_redirect"];
           this.status = data_setting["status"];
           this.free_spin = data_setting["free_spin"];
-          this.credit = data_setting["credit"];
+          this.buy_feature = data_setting["buy_feature"];
+          this.amount = data_setting["amount"];
           this.status_buy = data_setting["status_buy"];
-          this.bycredit_amount = data_setting["bycredit_amount"];
+          this.buy_amount = data_setting["buy_amount"];
           // setTimeout(() => this.$refs.foo.resetWheel(), 1000);
           this.display = true
         } else {

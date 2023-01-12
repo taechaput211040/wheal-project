@@ -44,8 +44,8 @@
           <!-- <div style="transform: translate(0px, -250px);">middle</div> /-->
         </div>
         <div class="button-wrapper">
-          <div class="buyspin" v-if="freespin == 0">
-            ซื้อฟรีสปิน {{bycredit_amount}} เครดิต
+          <div class="buyspin" v-if="freespin == 0 && buy_feature">
+            ซื้อฟรีสปิน {{buy_amount}} เครดิต
           </div>
           <!-- <a
             class="btn px-0 py-0"
@@ -60,11 +60,14 @@
           </a> -->
           <div
             class="btn px-0 py-0"
-            v-if="freespin == 0"
+            v-if="freespin == 0 && buy_feature"
           >
             <img :src="require('~/assets/BTN-bye.png')" alt="" @click="showBuy" />
           </div>
-          <a class="btn px-0 py-0" :href="this.redirex" v-if="freespin !== 0">
+          <a class="btn px-0 py-0" :href="this.redirex" v-if="freespin !== 0 && buy_feature">
+            <img :src="require('~/assets/BTN-back.png')" alt="" />
+          </a>
+          <a class="btn px-0 py-0" :href="this.redirex" v-if="!buy_feature">
             <img :src="require('~/assets/BTN-back.png')" alt="" />
           </a>
 
@@ -105,12 +108,62 @@
       <div class="bg_modal my-auto">
         <div class="d-block text-center">
           <h3>{{ this.reward_title }}</h3>
-          <div @click="buySpin">
+          <div @click="closeModel()">
             <img :src="require('~/assets/btn_reward.png')" alt="" />
           </div>
-          <div @click="hideBuy">
+
+        </div>
+      </div>
+    </b-modal>
+    <b-modal
+      ref="modal_fail_buy"
+      hide-footer
+      hide-header
+      centered
+      modal-class="modal_buy"
+      id=""
+    >
+      <div class="bg_modal my-auto">
+        <div class="d-block text-center">
+          <h3> ซื้อ ไม่สำเร็จ กรุณาลองใหม่ </h3>
+          <div class="d-flex justify-content-center">
+            <img @click="backToBuy" :src="require('~/assets/BTN-back.png')" alt="" />
+          </div>
+        </div>
+      </div>
+    </b-modal>
+    <b-modal
+      ref="modal_successful_buy"
+      hide-footer
+      hide-header
+      centered
+      modal-class="modal_buy"
+      id=""
+    >
+      <div class="bg_modal my-auto">
+        <div class="d-block text-center">
+          <h3> ซื้อ สำเร็จ </h3>
+          <div class="d-flex justify-content-center">
+            <img @click="refresh" :src="require('~/assets/BTN-bye.png')" alt="" />
+          </div>
+        </div>
+      </div>
+    </b-modal>
+    <b-modal
+      ref="modal_reward"
+      hide-footer
+      hide-header
+      centered
+      modal-class="modal-bg modal_reward "
+      id=""
+    >
+      <div class="bg_modal my-auto">
+        <div class="d-block text-center">
+          <h3>{{ this.reward_title }}</h3>
+          <div @click="closeModel()">
             <img :src="require('~/assets/btn_reward.png')" alt="" />
           </div>
+
         </div>
       </div>
     </b-modal>
@@ -185,6 +238,21 @@ export default {
         return "www.hotmail.com";
       },
     },
+    buyURL: {
+      default() {
+        return "/BuyLuckydraw";
+      },
+    },
+    buyToken: {
+      default() {
+        return "";
+      },
+    },
+    buy_feature: {
+      default() {
+        return false;
+      },
+    },
     dataPost: {
       default() {
         return "";
@@ -211,7 +279,7 @@ export default {
       type: Function,
       required: true,
     },
-    bycredit_amount: {
+    buy_amount: {
       tyoe: Number
     }
   },
@@ -251,7 +319,7 @@ export default {
     showPrize() {
       this.modalPrize = true;
     },
-    hidePrize() {
+    hidePrize() {modal_fail_buy
       this.modalPrize = false;
     },
     showBuy(){
@@ -263,10 +331,21 @@ export default {
       this.modalBuy = false;
       this.$refs["modal_buy"].hide();
     },
-    buySpin(){
-      this.freespin += 1;
+    async buySpin(){
       this.$refs["modal_buy"].hide();
       this.$emit('buy-event');
+      console.log(this.buyToken);
+      console.log(this.buyURL);
+      try{
+        let res = await this.$axios.post(this.buyURL, {
+            "ref_token": this.buyToken
+
+        })
+        this.$refs["modal_successful_buy"].show();
+      }catch(error){
+        this.$refs["modal_fail_buy"].show();
+      }
+
     },
     beforeSpinDefault() {
       return this.beforeSpin();
@@ -277,6 +356,7 @@ export default {
     },
     startSpin() {
       // this.beforeSpinDefault().then((result) => {
+      this.onReceive();
       if (this.wheelSpinning === false) {
         // this.theWheel.startAnimation();
         // this.wheelSpinning = true;
@@ -365,39 +445,56 @@ export default {
       this.showPrize();
       this.$refs["modal_reward"].show();
     },
+    closeModel() {
+      this.isLoading = false;
+      // remove array frist
+      this.reward.shift();
+      // this.dataPost.shift();
+      // this.$refs["modal_reward"].hide();
+      this.total_spin = this.total_spin + 1;
+      // console.log("this.freespin - this.total_spin = ",this.freespin - this.total_spin);
+      if (this.freespin - this.total_spin > 0) {
+        this.reward_title = this.reward[0].title;
+        this.loadingPrize = true;
+        this.resetWheel();
+        this.loadingPrize = false;
+      } else {
+        location.reload();
+        // this.$nuxt.refresh();
+      }
+      this.$refs["modal_reward"].hide();
+    },
     onReceive() {
-
-      console.log("this.dataPost ",this.dataPost)
-      this.isLoading = true;
+      console.log("this.dataPost ", this.dataPost);
+      // this.isLoading = true;
       this.$axios
         .post(this.url, this.dataPost, {
           auth: {
             username: "ten",
-            password: "3900"
+            password: "3900",
           },
         })
         .then(
           (response) => {
-
             // console.log("this.dataPost ",this.dataPost)
-            console.log("close modal")
-            console.log("response ",response);
-            this.isLoading = false;
-            // remove array frist
-            this.reward.shift();
-            // this.dataPost.shift();
-            this.$refs["modal_reward"].hide();
-            this.total_spin = this.total_spin + 1;
-            // console.log("this.freespin - this.total_spin = ",this.freespin - this.total_spin);
-            if (this.freespin - this.total_spin > 0) {
-              this.reward_title = this.reward[0].title;
-              this.loadingPrize = true;
-              this.resetWheel();
-              this.loadingPrize = false;
-            } else {
-              location.reload();
-              // this.$nuxt.refresh();
-            }
+            console.log("close modal");
+            console.log("response ", response);
+            // this.isLoading = false;
+            // // remove array frist
+            // this.reward.shift();
+            // // this.dataPost.shift();
+            // this.$refs["modal_reward"].hide();
+            // this.total_spin = this.total_spin + 1;
+            // // console.log("this.freespin - this.total_spin = ",this.freespin - this.total_spin);
+            // if (this.freespin - this.total_spin > 0) {
+            //   this.reward_title = this.reward[0].title;
+            //   this.loadingPrize = true;
+            //   this.resetWheel();
+            //   this.loadingPrize = false;
+            // } else {
+            //   location.reload();
+            //   // this.$nuxt.refresh();
+            // }
           },
           (error) => {
             this.isLoading = false;
@@ -442,6 +539,13 @@ export default {
         audio.play();
       }
     },
+    refresh(){
+      location.reload();
+    },
+    backToBuy(){
+      this.$refs["modal_fail_buy"].hide();
+      this.$refs["modal_buy"].show();
+    }
   },
   computed: {},
   // updated() {},
@@ -461,7 +565,7 @@ export default {
       this.wheelImage.src = require("~/assets/FT-wheel-mb.png");
     }
     else {
-      this.fontSize = 26;
+      this.fontSize = 20;
       this.wheelImage.src = require("~/assets/FT-wheel-dt.png");
     }
 
