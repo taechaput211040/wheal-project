@@ -93,8 +93,8 @@ export default {
       reward: {
         stopAt: 50,
       },
-      url_savescore: process.env.API_PROXY_URL+"/SaveScore",
-      url_buyspin: process.env.API_PROXY_URL+"/BuyLuckydraw",
+      url_savescore: process.env.API_PROXY_URL+"/api/v1/SaveScore",
+      url_buyspin: process.env.API_PROXY_URL+"/api/v1/BuyLuckydraw",
       setting: {},
       obj_score: [],
       data_post: {
@@ -183,7 +183,7 @@ export default {
         const token = this.$route.query.token;
 
         // console.log("0000 ",token);
-        var url_getdata =  process.env.API_PROXY_URL+"/getDataByToken/"+token
+        var url_getdata =  process.env.API_PROXY_URL+"/api/v1/getDataByToken/"+token
 
         const data_setting = await this.$axios
           .$get(url_getdata)
@@ -200,7 +200,8 @@ export default {
 
         //  console.log("setting =",data_setting )
           this.bg_wheel =
-            process.env.API_URL + "/" + data_setting["image_luckydraw"];
+          `${process.env.API_URL}/${data_setting["image_luckydraw"]}`
+       
           this.options = data_setting["options"];
           this.reward = data_setting["reward"];
           this.data_post = data_setting["data_post"];

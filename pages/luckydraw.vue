@@ -26,7 +26,7 @@ export default {
       reward: {
         stopAt:50
       },
-      url_savescore: process.env.API_PROXY_URL+"/SaveScore",
+      url_savescore: process.env.API_PROXY_URL+"/api/v1/SaveScore",
       url_getdata:
       "/getDataByToken/",
       setting: {},
