@@ -6,28 +6,48 @@
       <div class="wheel-wrapper">
         <div class="canvas-wrapper">
           <!-- width 320 && height 770 **** very small\old phone-->
-          <canvas id="canvas" width="300" height="300" v-if="smallerThanIPAD  && verySmallPhone">
+          <canvas
+            id="canvas"
+            width="300"
+            height="300"
+            v-if="smallerThanIPAD && verySmallPhone"
+          >
           </canvas>
-          <div class="spin_button" v-if="smallerThanIPAD  && verySmallPhone">
+          <div class="spin_button" v-if="smallerThanIPAD && verySmallPhone">
             <img
               :src="require('~/assets/BTN-spin.png')"
-              alt='spin button'
+              alt="spin button"
               v-if="freespin != 0"
               @click="startSpin"
             />
-            <img :src="require('~/assets/BTN-non-spin.png')" style="width=100%; height:auto;" alt='spin button' v-if="freespin == 0"/>
+            <img
+              :src="require('~/assets/BTN-non-spin.png')"
+              style="width=100%; height:auto;"
+              alt="spin button"
+              v-if="freespin == 0"
+            />
           </div>
           <!-- 375 > width > 768-->
-          <canvas id="canvas" width="320" height="320" v-if="smallerThanIPAD && !verySmallPhone">
+          <canvas
+            id="canvas"
+            width="320"
+            height="320"
+            v-if="smallerThanIPAD && !verySmallPhone"
+          >
           </canvas>
           <div class="spin_button" v-if="smallerThanIPAD && !verySmallPhone">
             <img
               :src="require('~/assets/BTN-spin.png')"
-              alt='spin button'
+              alt="spin button"
               v-if="freespin != 0"
               @click="startSpin"
             />
-            <img :src="require('~/assets/BTN-non-spin.png')" style="width=100%; height:auto;" alt='spin button' v-if="freespin == 0"/>
+            <img
+              :src="require('~/assets/BTN-non-spin.png')"
+              style="width=100%; height:auto;"
+              alt="spin button"
+              v-if="freespin == 0"
+            />
           </div>
           <!-- ipad or larger screen -->
           <canvas id="canvas" width="450" height="450" v-if="!smallerThanIPAD">
@@ -35,17 +55,21 @@
           <div class="spin_button" v-if="!smallerThanIPAD">
             <img
               :src="require('~/assets/BTN-spin.png')"
-              alt='spin button'
+              alt="spin button"
               v-if="freespin != 0"
               @click="startSpin"
             />
-            <img :src="require('~/assets/BTN-non-spin.png')" alt='spin button' v-if="freespin == 0"/>
+            <img
+              :src="require('~/assets/BTN-non-spin.png')"
+              alt="spin button"
+              v-if="freespin == 0"
+            />
           </div>
           <!-- <div style="transform: translate(0px, -250px);">middle</div> /-->
         </div>
         <div class="button-wrapper">
           <div class="buyspin" v-if="freespin == 0 && buy_feature">
-            ซื้อฟรีสปิน {{buy_amount}} เครดิต
+            ซื้อฟรีสปิน {{ buy_amount }} เครดิต
           </div>
           <!-- <a
             class="btn px-0 py-0"
@@ -58,13 +82,18 @@
           status : {{status}}
             <img :src="require('~/assets/BTN-bye.png')" alt="" />
           </a> -->
-          <div
-            class="btn px-0 py-0"
-            v-if="freespin == 0 && buy_feature"
-          >
-            <img :src="require('~/assets/BTN-bye.png')" alt="" @click="showBuy" />
+          <div class="btn px-0 py-0" v-if="freespin == 0 && buy_feature">
+            <img
+              :src="require('~/assets/BTN-bye.png')"
+              alt=""
+              @click="showBuy"
+            />
           </div>
-          <a class="btn px-0 py-0" :href="this.redirex" v-if="freespin !== 0 && buy_feature">
+          <a
+            class="btn px-0 py-0"
+            :href="this.redirex"
+            v-if="freespin !== 0 && buy_feature"
+          >
             <img :src="require('~/assets/BTN-back.png')" alt="" />
           </a>
           <a class="btn px-0 py-0" :href="this.redirex" v-if="!buy_feature">
@@ -102,6 +131,7 @@
       hide-footer
       hide-header
       centered
+      no-close-on-backdrop
       modal-class="modal-bg modal_reward "
       id=""
     >
@@ -109,9 +139,12 @@
         <div class="d-block text-center">
           <h3>{{ this.reward_title }}</h3>
           <div @click="closeModel()">
-            <img :src="require('~/assets/btn_reward.png')" alt="" />
+            <img
+              class="btn_class"
+              :src="require('~/assets/btn_reward.png')"
+              alt=""
+            />
           </div>
-
         </div>
       </div>
     </b-modal>
@@ -120,14 +153,19 @@
       hide-footer
       hide-header
       centered
-      modal-class="modal_buy"
+      modal-class="modal_buy_fail"
       id=""
     >
       <div class="bg_modal my-auto">
         <div class="d-block text-center">
-          <h3> ซื้อ ไม่สำเร็จ กรุณาลองใหม่ </h3>
+          <h3>ซื้อ ไม่สำเร็จ กรุณาลองใหม่</h3>
           <div class="d-flex justify-content-center">
-            <img @click="backToBuy" :src="require('~/assets/BTN-back.png')" alt="" />
+            <img
+              class="btn_class"
+              @click="backToBuy"
+              :src="require('~/assets/BTN-back.png')"
+              alt=""
+            />
           </div>
         </div>
       </div>
@@ -137,14 +175,20 @@
       hide-footer
       hide-header
       centered
-      modal-class="modal_buy"
+      no-close-on-backdrop
+      modal-class="modal_buy_success"
       id=""
     >
       <div class="bg_modal my-auto">
         <div class="d-block text-center">
-          <h3> ซื้อ สำเร็จ </h3>
+          <h3>ซื้อ สำเร็จ</h3>
           <div class="d-flex justify-content-center">
-            <img @click="refresh" :src="require('~/assets/BTN-bye.png')" alt="" />
+            <img
+              class="btn_class"
+              @click="refresh"
+              :src="require('~/assets/btn-spsin-now.png')"
+              alt=""
+            />
           </div>
         </div>
       </div>
@@ -154,6 +198,7 @@
       hide-footer
       hide-header
       centered
+      no-close-on-backdrop
       modal-class="modal-bg modal_reward "
       id=""
     >
@@ -161,9 +206,12 @@
         <div class="d-block text-center">
           <h3>{{ this.reward_title }}</h3>
           <div @click="closeModel()">
-            <img :src="require('~/assets/btn_reward.png')" alt="" />
+            <img
+              :src="require('~/assets/btn_reward.png')"
+              class="btn_class"
+              alt=""
+            />
           </div>
-
         </div>
       </div>
     </b-modal>
@@ -172,15 +220,26 @@
       hide-footer
       hide-header
       centered
+      no-close-on-backdrop
       modal-class="modal_buy"
       id=""
     >
       <div class="bg_modal my-auto">
         <div class="d-block text-center">
-          <h3> ซื้อ spin </h3>
+          <h3>ซื้อ spin</h3>
           <div class="d-flex justify-content-center">
-            <img @click="buySpin" :src="require('~/assets/BTN-bye.png')" alt="" />
-            <img @click="hideBuy" :src="require('~/assets/BTN-cancle.png')" alt="" />
+            <img
+              class="btn_class"
+              @click="buySpin"
+              :src="require('~/assets/BTN-bye.png')"
+              alt=""
+            />
+            <img
+              class="btn_class"
+              @click="hideBuy"
+              :src="require('~/assets/BTN-cancle.png')"
+              alt=""
+            />
           </div>
         </div>
       </div>
@@ -213,7 +272,6 @@
   </section>
 </template>
 
-
 <script>
 // import Loading from "vue-loading-overlay";
 // import "vue-loading-overlay/dist/vue-loading.css";
@@ -225,59 +283,59 @@ export default {
   name: "VueWinWheel",
   props: {
     segments: {
-      type: Array,
+      type: Array
     },
     score: {
       default() {
         return 30;
-      },
+      }
     },
 
     url: {
       default() {
         return "www.hotmail.com";
-      },
+      }
     },
     buyURL: {
       default() {
         return "/BuyLuckydraw";
-      },
+      }
     },
     buyToken: {
       default() {
         return "";
-      },
+      }
     },
     buy_feature: {
       default() {
         return false;
-      },
+      }
     },
     dataPost: {
       default() {
         return "";
-      },
+      }
     },
     reward: {
       default() {
         return "";
-      },
+      }
     },
     status: {
       default() {
         return 0;
-      },
+      }
     },
     redirex: "",
     freespin: {
       default() {
         return "";
-      },
+      }
     },
 
     beforeSpin: {
       type: Function,
-      required: true,
+      required: true
     },
     buy_amount: {
       tyoe: Number
@@ -299,13 +357,17 @@ export default {
         innerRadius: 25,
         lineWidth: 8,
         drawText: true,
-        animation: {},
+        animation: {}
       },
       audio: null,
       wheelImage: new Image(),
       isMobile: isMobile,
-      sound_bg: new Audio("https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/20210829153536b82885fea83a4f81aec70eb5f97c0840.mp3"),
-      sound_reward: new Audio("https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/20210829153634d5d55b635d7848c4b8ec0b98dacae384.mp3"),
+      sound_bg: new Audio(
+        "https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/20210829153536b82885fea83a4f81aec70eb5f97c0840.mp3"
+      ),
+      sound_reward: new Audio(
+        "https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/20210829153634d5d55b635d7848c4b8ec0b98dacae384.mp3"
+      ),
       fontSize: 14,
       reward_title: "",
       total_spin: 0,
@@ -319,33 +381,32 @@ export default {
     showPrize() {
       this.modalPrize = true;
     },
-    hidePrize() {modal_fail_buy
+    hidePrize() {
+      modal_fail_buy;
       this.modalPrize = false;
     },
-    showBuy(){
+    showBuy() {
       this.modalBuy = true;
-      console.log('show buy popup')
+      console.log("show buy popup");
       this.$refs["modal_buy"].show();
     },
-    hideBuy(){
+    hideBuy() {
       this.modalBuy = false;
       this.$refs["modal_buy"].hide();
     },
-    async buySpin(){
+    async buySpin() {
       this.$refs["modal_buy"].hide();
-      this.$emit('buy-event');
+      this.$emit("buy-event");
       console.log(this.buyToken);
       console.log(this.buyURL);
-      try{
+      try {
         let res = await this.$axios.post(this.buyURL, {
-            "ref_token": this.buyToken
-
-        })
+          ref_token: this.buyToken
+        });
         this.$refs["modal_successful_buy"].show();
-      }catch(error){
+      } catch (error) {
         this.$refs["modal_fail_buy"].show();
       }
-
     },
     beforeSpinDefault() {
       return this.beforeSpin();
@@ -354,9 +415,9 @@ export default {
       const data = await this.$axios.$get(this.url);
       // console.log(data);
     },
-    startSpin() {
+    async startSpin() {
       // this.beforeSpinDefault().then((result) => {
-      this.onReceive();
+      await this.onReceive();
       if (this.wheelSpinning === false) {
         // this.theWheel.startAnimation();
         // this.wheelSpinning = true;
@@ -375,8 +436,8 @@ export default {
             spins: 8,
             callbackFinished: this.onFinishSpin,
             callbackSound: this.playSoundPin(),
-            soundTrigger: "pin",
-          },
+            soundTrigger: "pin"
+          }
           // pins: { number: 24 },
         });
 
@@ -404,12 +465,18 @@ export default {
     },
     resetWheel() {
       // require("~/assets/tickticktick.mp3")
-      window.screen.width < 320 || window.screen.height < 770 ? this.verySmallPhone = true : this.verySmallPhone = false;
-      window.screen.width < 768 ? this.smallerThanIPAD = true : this.smallerThanIPAD = false;
+      window.screen.width < 320 || window.screen.height < 770
+        ? (this.verySmallPhone = true)
+        : (this.verySmallPhone = false);
+      window.screen.width < 768
+        ? (this.smallerThanIPAD = true)
+        : (this.smallerThanIPAD = false);
       // console.log(this.isMobile);
       // console.log(this.smallerThanIPAD);
 
-      this.audio = new Audio("https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/202108291537181d53e6b561c84bb4ab33054f80ca2e27.mp3");
+      this.audio = new Audio(
+        "https://s3.ap-southeast-1.amazonaws.com/image-storage-betkub/luckydraw/202108291537181d53e6b561c84bb4ab33054f80ca2e27.mp3"
+      );
       // console.log("resetWheel");
       this.theWheel = new Winwheel.Winwheel({
         ...this.WinWheelOptions,
@@ -419,7 +486,7 @@ export default {
         textFillStyle: "#fff",
         // drawMode: 'segmentImage',
         drawMode: "image",
-        drawText: true,
+        drawText: true
       });
 
       if (this.wheelSpinning) {
@@ -459,23 +526,23 @@ export default {
         this.resetWheel();
         this.loadingPrize = false;
       } else {
-        location.reload();
+        this.$emit("eventRefresh");
         // this.$nuxt.refresh();
       }
       this.$refs["modal_reward"].hide();
     },
-    onReceive() {
+    async onReceive() {
       console.log("this.dataPost ", this.dataPost);
       // this.isLoading = true;
-      this.$axios
+      await this.$axios
         .post(this.url, this.dataPost, {
           auth: {
             username: "ten",
-            password: "3900",
-          },
+            password: "3900"
+          }
         })
         .then(
-          (response) => {
+          response => {
             // console.log("this.dataPost ",this.dataPost)
             console.log("close modal");
             console.log("response ", response);
@@ -496,7 +563,7 @@ export default {
             //   // this.$nuxt.refresh();
             // }
           },
-          (error) => {
+          error => {
             this.isLoading = false;
             this.$swal("ไม่สามารถบันทึกข้อมุลได้ กรุณาลองใหม่");
             console.log(error);
@@ -531,7 +598,6 @@ export default {
       this.$refs["modal_before"].hide();
       this.playSoundBg();
       this.resetWheel();
-
     },
     playSound(sound) {
       if (sound) {
@@ -539,10 +605,14 @@ export default {
         audio.play();
       }
     },
-    refresh(){
-      location.reload();
+    async refresh() {
+      this.$refs["modal_successful_buy"].hide();
+      this.$emit("eventRefresh");
+      setTimeout(() => {
+        this.startSpin();
+      }, 1000);
     },
-    backToBuy(){
+    backToBuy() {
       this.$refs["modal_fail_buy"].hide();
       this.$refs["modal_buy"].show();
     }
@@ -557,14 +627,17 @@ export default {
   // },
   mounted() {
     this.wheelImage = new Image();
-    window.screen.width < 320 || window.screen.height < 770 ? this.verySmallPhone = true : this.verySmallPhone = false;
-    window.screen.width < 768 ? this.smallerThanIPAD = true : this.smallerThanIPAD = false;
-    if (this.smallerThanIPAD  && this.verySmallPhone) {
+    window.screen.width < 320 || window.screen.height < 770
+      ? (this.verySmallPhone = true)
+      : (this.verySmallPhone = false);
+    window.screen.width < 768
+      ? (this.smallerThanIPAD = true)
+      : (this.smallerThanIPAD = false);
+    if (this.smallerThanIPAD && this.verySmallPhone) {
       this.wheelImage.src = require("~/assets/FT-wheel-mb-xs.png");
-    }else if(this.smallerThanIPAD  && !this.verySmallPhone){
+    } else if (this.smallerThanIPAD && !this.verySmallPhone) {
       this.wheelImage.src = require("~/assets/FT-wheel-mb.png");
-    }
-    else {
+    } else {
       this.fontSize = 20;
       this.wheelImage.src = require("~/assets/FT-wheel-dt.png");
     }
@@ -587,21 +660,24 @@ export default {
     // if('title' in this.reward[0] ){
     // }
     // console.log("reward ",this.reward[0]);
-  },
+  }
 };
 </script>
 
 <style lang="scss" scoped>
+
+.btn_class {
+  cursor: pointer;
+}
 .d-fix {
-    position: fixed;
-    top: 50vh;
-    left: 49vw;
+  position: fixed;
+  top: 50vh;
+  left: 49vw;
 }
 .vue-winwheel-component {
   text-align: center;
   // background-image: url("../assets/wheel.png");
   /* background-image: url("../assets/wing.mp4"); */
-
 }
 .vue-winwheel-component h1 {
   color: #b32656;
@@ -618,7 +694,11 @@ export default {
   width: calc(100vw - 30px);
   padding-top: 52px;
 }
-.vue-winwheel-component #modalSpinwheel.custom-modal .content-wrapper .content h2 {
+.vue-winwheel-component
+  #modalSpinwheel.custom-modal
+  .content-wrapper
+  .content
+  h2 {
   text-transform: uppercase;
   color: #b32656;
   margin-bottom: 16px;
@@ -628,14 +708,23 @@ export default {
   letter-spacing: 1.1px;
   margin: 0;
 }
-.vue-winwheel-component #modalSpinwheel.custom-modal .content-wrapper .content p {
+.vue-winwheel-component
+  #modalSpinwheel.custom-modal
+  .content-wrapper
+  .content
+  p {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
   font-size: 14px;
   color: black;
   text-align: center;
   line-height: 25px;
 }
-.vue-winwheel-component #modalSpinwheel.custom-modal .content-wrapper .content p strong {
+.vue-winwheel-component
+  #modalSpinwheel.custom-modal
+  .content-wrapper
+  .content
+  p
+  strong {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
 }
 .vue-winwheel-component
@@ -690,11 +779,11 @@ export default {
   top: 0;
 }
 
-.spin_button{
-  transform: translate( 0px, -220px);
+.spin_button {
+  transform: translate(0px, -220px);
 }
 
-.spin_button img{
+.spin_button img {
   width: 133px;
   height: auto;
 }
@@ -704,11 +793,11 @@ export default {
     height: 450px;
   }
 
-  .spin_button{
-    transform: translate( 0px, -330px);
+  .spin_button {
+    transform: translate(0px, -330px);
   }
 
-  .spin_button img{
+  .spin_button img {
     width: 200px;
     height: auto;
   }
@@ -778,7 +867,9 @@ export default {
     }
   }
 }
-.modal_buy {
+.modal_buy,
+.modal_buy_success,
+.modal_buy_fail {
   h3 {
     margin-top: 30%;
     padding-bottom: 15%;
@@ -792,7 +883,7 @@ export default {
   cursor: pointer;
   margin-top: 50%;
 }
-@media(max-height: 770px) {
+@media (max-height: 770px) {
   .vue-winwheel-component .canvas-wrapper:before {
     content: "";
     display: block;
@@ -816,8 +907,10 @@ export default {
     height: 118px;
   }
 }
-@media (max-width: 500px){
-  .modal_buy {
+@media (max-width: 500px) {
+  .modal_buy,
+  .modal_buy_success,
+  .modal_buy_fail {
     h3 {
       font-size: 20px;
       margin-top: 30%;
@@ -827,12 +920,12 @@ export default {
       width: 100px;
     }
   }
-  .modal-dialog .modal-md .modal-dialog-centered{
+  .modal-dialog .modal-md .modal-dialog-centered {
     margin: auto;
   }
 }
 
-@media(max-width: 320px) {
+@media (max-width: 320px) {
   .vue-winwheel-component .canvas-wrapper:before {
     content: "";
     display: block;
@@ -862,9 +955,8 @@ export default {
 // }
 </style>
 
-
 <style scoped>
-.buyspin{
+.buyspin {
   background: #fd572a;
   color: #fff;
   padding: 3px 30px;
@@ -891,8 +983,22 @@ export default {
   background: inherit;
 }
 
-/deep/.modal_buy .modal-content{
+/deep/.modal_buy_fail .modal-content {
+  background: url("../assets/modal-alert.png");
+  background-size: 100%;
+  width: 600px;
+  height: 400px;
+  border: none;
+}
+/deep/.modal_buy_success .modal-content {
   background: url("../assets/modal-purchase-confirm.png");
+  background-size: 100%;
+  width: 600px;
+  height: 400px;
+  border: none;
+}
+/deep/.modal_buy .modal-content {
+  background: url("../assets/modal-purchase.png");
   background-size: 100%;
   width: 600px;
   height: 400px;
@@ -923,11 +1029,29 @@ export default {
 }
 
 @media (max-width: 500px) {
-  /deep/.modal_buy .modal-content{
+  /deep/.modal_buy_fail .modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: url("../assets/modal-alert.png");
+    background-size: 100%;
+    width: 300px;
+    height: 240px;
+  }
+  /deep/.modal_buy_success .modal-content {
     position: relative;
     display: flex;
     flex-direction: column;
     background: url("../assets/modal-purchase-confirm.png");
+    background-size: 100%;
+    width: 300px;
+    height: 240px;
+  }
+  /deep/.modal_buy .modal-content {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    background: url("../assets/modal-purchase.png");
     background-size: 100%;
     width: 300px;
     height: 240px;
@@ -940,8 +1064,6 @@ export default {
     align-items: flex-start;
   }
 }
-
-
 
 /* Absolute Center Spinner */
 .loading {
@@ -959,16 +1081,19 @@ export default {
 
 /* Transparent Overlay */
 .loading:before {
-  content: '';
+  content: "";
   display: block;
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
-    background: radial-gradient(rgba(20, 20, 20,.8), rgba(0, 0, 0, .8));
+  background: radial-gradient(rgba(20, 20, 20, 0.8), rgba(0, 0, 0, 0.8));
 
-  background: -webkit-radial-gradient(rgba(20, 20, 20,.8), rgba(0, 0, 0,.8));
+  background: -webkit-radial-gradient(
+    rgba(20, 20, 20, 0.8),
+    rgba(0, 0, 0, 0.8)
+  );
 }
 
 /* :not(:required) hides these rules from IE9 and below */
@@ -982,7 +1107,7 @@ export default {
 }
 
 .loading:not(:required):after {
-  content: '';
+  content: "";
   display: block;
   font-size: 10px;
   width: 1em;
@@ -994,8 +1119,22 @@ export default {
   -o-animation: spinner 150ms infinite linear;
   animation: spinner 150ms infinite linear;
   border-radius: 0.5em;
-  -webkit-box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1.1em 0 0, rgba(255,255,255, 0.75) 0 1.5em 0 0, rgba(255,255,255, 0.75) -1.1em 1.1em 0 0, rgba(255,255,255, 0.75) -1.5em 0 0 0, rgba(255,255,255, 0.75) -1.1em -1.1em 0 0, rgba(255,255,255, 0.75) 0 -1.5em 0 0, rgba(255,255,255, 0.75) 1.1em -1.1em 0 0;
-box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1.1em 0 0, rgba(255,255,255, 0.75) 0 1.5em 0 0, rgba(255,255,255, 0.75) -1.1em 1.1em 0 0, rgba(255,255,255, 0.75) -1.5em 0 0 0, rgba(255,255,255, 0.75) -1.1em -1.1em 0 0, rgba(255,255,255, 0.75) 0 -1.5em 0 0, rgba(255,255,255, 0.75) 1.1em -1.1em 0 0;
+  -webkit-box-shadow: rgba(255, 255, 255, 0.75) 1.5em 0 0 0,
+    rgba(255, 255, 255, 0.75) 1.1em 1.1em 0 0,
+    rgba(255, 255, 255, 0.75) 0 1.5em 0 0,
+    rgba(255, 255, 255, 0.75) -1.1em 1.1em 0 0,
+    rgba(255, 255, 255, 0.75) -1.5em 0 0 0,
+    rgba(255, 255, 255, 0.75) -1.1em -1.1em 0 0,
+    rgba(255, 255, 255, 0.75) 0 -1.5em 0 0,
+    rgba(255, 255, 255, 0.75) 1.1em -1.1em 0 0;
+  box-shadow: rgba(255, 255, 255, 0.75) 1.5em 0 0 0,
+    rgba(255, 255, 255, 0.75) 1.1em 1.1em 0 0,
+    rgba(255, 255, 255, 0.75) 0 1.5em 0 0,
+    rgba(255, 255, 255, 0.75) -1.1em 1.1em 0 0,
+    rgba(255, 255, 255, 0.75) -1.5em 0 0 0,
+    rgba(255, 255, 255, 0.75) -1.1em -1.1em 0 0,
+    rgba(255, 255, 255, 0.75) 0 -1.5em 0 0,
+    rgba(255, 255, 255, 0.75) 1.1em -1.1em 0 0;
 }
 
 /* Animation */

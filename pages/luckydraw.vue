@@ -18,22 +18,21 @@ import VueWinwheel from "vue-winwheel/vue-winwheel";
 
 export default {
   components: {
-    VueWinwheel,
+    VueWinwheel
   },
   data() {
     return {
       options: [],
       reward: {
-        stopAt:50
+        stopAt: 50
       },
-      url_savescore: process.env.API_PROXY_URL+"/api/v1/SaveScore",
-      url_getdata:
-      "/getDataByToken/",
+      url_savescore: process.env.API_PROXY_URL + "/api/v1/SaveScore",
+      url_getdata: "/getDataByToken/",
       setting: {},
       obj_score: [],
-      data_post:{},
-      redirex:"",
-      bg_wheel:""
+      data_post: {},
+      redirex: "",
+      bg_wheel: ""
     };
   },
   computed: {
@@ -43,13 +42,13 @@ export default {
     dynamicScore() {
       return this.reward.stopAt;
     },
-    dynamicbg_wheel(){
+    dynamicbg_wheel() {
       return this.bg_wheel;
     }
   },
   beforecreated() {},
   async created() {
-    let get = await this.GetData()
+    let get = await this.GetData();
     this.sendData();
   },
   methods: {
@@ -59,34 +58,35 @@ export default {
     async GetData() {
       try {
         const token = this.$route.query.token;
-        const data_setting = await this.$axios.$get(this.url_getdata+token).catch(error => {
-          if (this.$axios.isCancel(error)) {
-            console.log('Request canceled', error)
-          } else {
-            this.$swal('ไม่สามารถ ติดต่อกับ Server ได้')
-            return false
-          }
-        });
+        const data_setting = await this.$axios
+          .$get(this.url_getdata + token)
+          .catch(error => {
+            if (this.$axios.isCancel(error)) {
+              console.log("Request canceled", error);
+            } else {
+              this.$swal("ไม่สามารถ ติดต่อกับ Server ได้");
+              return false;
+            }
+          });
         if (data_setting) {
           // console.log("setting ="+JSON.stringify(data_setting ))
-          this.bg_wheel = process.env.API_URL+"/"+data_setting['image_luckydraw']
-          this.options = data_setting['options']
-          this.reward = data_setting['reward']
-          this.data_post = data_setting['data_post']
-          this.redirex = data_setting['call_back']
-        }else{
-          this.$swal('Token ถูกใช้งานแล้ว')
-          console.log("error = "+error)
-          // this.$router.push('/') 
+          this.bg_wheel =
+            process.env.API_URL + "/" + data_setting["image_luckydraw"];
+          this.options = data_setting["options"];
+          this.reward = data_setting["reward"];
+          this.data_post = data_setting["data_post"];
+          this.redirex = data_setting["call_back"];
+        } else {
+          this.$swal("Token ถูกใช้งานแล้ว");
+          console.log("error = " + error);
+          // this.$router.push('/')
           return false;
         }
       } catch (error) {
-
-        this.$swal('Token ถูกใช้งานแล้ว')
-        console.log("error = "+error)
-        // this.$router.push('/') 
+        this.$swal("Token ถูกใช้งานแล้ว");
+        console.log("error = " + error);
+        // this.$router.push('/')
         return false;
-        
       }
     },
     beforeSpin() {
@@ -99,11 +99,10 @@ export default {
       if (before) {
         //console.log("Spin");
       }
-    },
-  },
+    }
+  }
 };
 </script>
-
 
 <style scoped>
 .vue-winwheel .wheel-wrapper .btn.btn-play {

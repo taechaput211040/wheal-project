@@ -1,10 +1,10 @@
 <template>
   <section class="vue-winwheel" id="home">
     <!-- pc frame -->
-      <div class="backgroundFrame">
+    <div class="backgroundFrame">
       <!-- currency -->
       <div class="navigator">
-        <div class="d-flex" >
+        <div class="d-flex">
           <div class="col-3">
             <a :href="redirex" v-if="free_spin == 0">
               <img
@@ -18,13 +18,13 @@
             <div class="d-flex justify-content-end">
               <div class="d-flex currency_bg" style="position: relative;">
                 <img src="~/assets/FT-wheel-mb.png" width="30" height="30" />
-                <div class="content col">รอบสปิน : {{free_spin}}</div>
+                <div class="content px-2">รอบสปิน : {{ free_spin }}</div>
               </div>
             </div>
             <div class="d-flex justify-content-end pt-2">
               <div class="d-flex currency_bg" style="position: relative;">
                 <img src="~/assets/FT-icon-coin.png" width="30" height="30" />
-                <div class="content col">เครดิต : {{amount}}</div>
+                <div class="content px-2">เครดิต : {{ amount }}</div>
               </div>
             </div>
           </div>
@@ -40,28 +40,28 @@
       <!-- spinner -->
       <div v-if="display" class="spinner-padding">
         <VueWinwheel
-        :segments="this.dynamicOption"
-        :score="this.dynamicScore"
-        :url="url_savescore"
-        :buyURL="this.url_buyspin"
-        :buyToken="this.$route.query.token"
-        :buy_feature="this.buy_feature"
-        :reward="this.dynamicReward"
-        :beforeSpin="beforeSpin"
-        :dataPost="this.dynamicData"
-        :redirex="redirex"
-        :bg_wheel="this.dynamicbg_wheel"
-        :status="this.dynamicStatus"
-        :buy_amount="this.buy_amount"
-        :freespin="this.dynamicFreespin"
-        @buy-event="refresh"
-        ref="foo"
-      />
+          :segments="this.dynamicOption"
+          :score="this.dynamicScore"
+          :url="url_savescore"
+          :buyURL="this.url_buyspin"
+          :buyToken="this.$route.query.token"
+          :buy_feature="this.buy_feature"
+          :reward="this.dynamicReward"
+          :beforeSpin="beforeSpin"
+          :dataPost="this.dynamicData"
+          :redirex="redirex"
+          :bg_wheel="this.dynamicbg_wheel"
+          :status="this.dynamicStatus"
+          :buy_amount="this.buy_amount"
+          :freespin="this.dynamicFreespin"
+          @buy-event="refresh"
+          ref="foo"
+          @eventRefresh="GetData"
+        />
       </div>
     </div>
 
-
-      <!-- :key="this.dynamicReftoken" -->
+    <!-- :key="this.dynamicReftoken" -->
     <div class="bg_vdo">
       <!-- <video playsinline autoplay muted loop poster="" id="bgvid">
         <source :src="require('~/assets/wing.mp4')" type="video/mp4" />
@@ -74,7 +74,6 @@
         <source :src="require('~/assets/alberta.mp3')" type="audio/mpeg">
 
       </audio> -->
-
     </dir>
   </section>
 </template>
@@ -84,21 +83,21 @@
 // import VueWinwheel from "vue-winwheel/vue-winwheel";
 export default {
   components: {
-    dirs: ["~/components/vue-winwheel"],
+    dirs: ["~/components/vue-winwheel"]
     // VueWinwheel
   },
   data() {
     return {
       options: [],
       reward: {
-        stopAt: 50,
+        stopAt: 50
       },
-      url_savescore: process.env.API_PROXY_URL+"/api/v1/SaveScore",
-      url_buyspin: process.env.API_PROXY_URL+"/api/v1/BuyLuckydraw",
+      url_savescore: process.env.API_PROXY_URL + "/api/v1/SaveScore",
+      url_buyspin: process.env.API_PROXY_URL + "/api/v1/BuyLuckydraw",
       setting: {},
       obj_score: [],
       data_post: {
-        "ref_token":''
+        ref_token: ""
       },
       redirex: "",
       bg_wheel: "",
@@ -106,15 +105,15 @@ export default {
         sources: [
           {
             src: require("~/assets/wing.mp4"),
-            type: "video/mp4",
-          },
+            type: "video/mp4"
+          }
         ],
         options: {
           autoplay: true,
           volume: 0,
           poster: "",
-          loop: true,
-        },
+          loop: true
+        }
       },
       amount: 200,
       status: 0,
@@ -122,8 +121,8 @@ export default {
       buy_feature: false,
       by_amount: 100,
       // isMobile: isMobile,
-      free_spin:0,
-      display:false
+      free_spin: 0,
+      display: false
     };
   },
   computed: {
@@ -131,13 +130,11 @@ export default {
       return this.options;
     },
     dynamicScore() {
-      if(this.reward){
+      if (this.reward) {
         return this.reward.stopAt || 0;
-      }else{
-        return ''
+      } else {
+        return "";
       }
-
-
     },
     dynamicbg_wheel() {
       return this.bg_wheel;
@@ -151,19 +148,16 @@ export default {
     dynamicFreespin() {
       return this.free_spin;
     },
-    dynamicReftoken(){
-      return this.data_post.ref_token
+    dynamicReftoken() {
+      return this.data_post.ref_token;
     },
-    dynamicData(){
-      if(this.data_post){
-        return this.data_post[0]
-      }else{
-        return ''
+    dynamicData() {
+      if (this.data_post) {
+        return this.data_post[0];
+      } else {
+        return "";
       }
     }
-
-
-
   },
   beforecreated() {},
   async created() {
@@ -171,9 +165,7 @@ export default {
     // document.querySelector("audio").play();
     // this.sendData();
   },
-  mounted() {
-
-  },
+  mounted() {},
   methods: {
     AlertPrize(indicatedSegment) {
       console.log(indicatedSegment);
@@ -183,11 +175,12 @@ export default {
         const token = this.$route.query.token;
 
         // console.log("0000 ",token);
-        var url_getdata =  process.env.API_PROXY_URL+"/api/v1/getDataByToken/"+token
+        var url_getdata =
+          process.env.API_PROXY_URL + "/api/v1/getDataByToken/" + token;
 
         const data_setting = await this.$axios
           .$get(url_getdata)
-          .catch((error) => {
+          .catch(error => {
             if (this.$axios.isCancel(error)) {
               console.log("Request canceled", error);
             } else {
@@ -196,12 +189,9 @@ export default {
             }
           });
         if (data_setting) {
+          //  console.log("setting =",data_setting )
+          this.bg_wheel = `${process.env.API_URL}/${data_setting["image_luckydraw"]}`;
 
-
-        //  console.log("setting =",data_setting )
-          this.bg_wheel =
-          `${process.env.API_URL}/${data_setting["image_luckydraw"]}`
-       
           this.options = data_setting["options"];
           this.reward = data_setting["reward"];
           this.data_post = data_setting["data_post"];
@@ -213,9 +203,9 @@ export default {
           this.status_buy = data_setting["status_buy"];
           this.buy_amount = data_setting["buy_amount"];
           // setTimeout(() => this.$refs.foo.resetWheel(), 1000);
-          this.display = true
+          this.display = true;
         } else {
-          this.display = false
+          this.display = false;
           this.$swal("Token ถูกใช้งานแล้ว");
           // console.log("error = " + error);
           // this.$router.push('/')
@@ -228,10 +218,10 @@ export default {
         return false;
       }
     },
-    refresh(){
-      console.log('buy a spin');
-      console.log('call api');
-      console.log('refresh -> get new data');
+    refresh() {
+      console.log("buy a spin");
+      console.log("call api");
+      console.log("refresh -> get new data");
     },
     beforeSpin() {
       return new Promise((resolve, reject) => {
@@ -243,14 +233,13 @@ export default {
       if (before) {
         //console.log("Spin");
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
-
 <style lang="scss" scoped>
-.backgroundFrame{
+.backgroundFrame {
   width: 600px;
   height: 100vh;
   background: #00000080;
@@ -268,7 +257,7 @@ export default {
     height: 100%;
   }
 }
-.vue-winwheel  {
+.vue-winwheel {
   height: 100vh;
   background-image: url("../assets/BG_web.jpg");
   background-size: cover;
@@ -316,16 +305,16 @@ export default {
   }
 }
 
-.spinner-padding{
+.spinner-padding {
   transform: translate(0px, 10px);
 }
 
-.currency_bg{
+.currency_bg {
   background-color: #00000080;
   border-radius: 50px;
   width: 150px;
   height: 30px;
-  .content{
+  .content {
     color: white;
   }
 }
@@ -364,102 +353,96 @@ export default {
 }
 
 @media (max-width: 1400px) {
-  .navigator{
+  .navigator {
     width: 450px;
-    .back{
+    .back {
       width: 60px;
     }
   }
-  .header  {
-    img{
+  .header {
+    img {
       width: 300px;
     }
   }
-  .spinner-padding{
+  .spinner-padding {
     transform: translate(0px, 10px);
   }
-
 }
 
 @media (max-width: 1024px) {
-  .navigator{
+  .navigator {
     width: 450px;
-    .back{
+    .back {
       width: 60px;
     }
   }
   .header2 {
-    img{
+    img {
       width: 280px;
     }
   }
-  .spinner-padding{
+  .spinner-padding {
     transform: translate(0px, 30px);
   }
-
 }
 
 @media (max-width: 768px) {
-  .navigator{
+  .navigator {
     width: 450px;
-    .back{
+    .back {
       width: 60px;
     }
   }
   .header2 {
-    img{
+    img {
       width: 260px;
     }
   }
-  .spinner-padding{
+  .spinner-padding {
     transform: translate(0px, 30px);
   }
-
 }
 
 @media (max-width: 500px) {
-  .backgroundFrame{
+  .backgroundFrame {
     width: 100%;
     background: unset;
   }
-  .navigator{
+  .navigator {
     width: 320px;
-    .back{
+    .back {
       width: 60px;
     }
   }
-  .header2{
-    img{
+  .header2 {
+    img {
       width: 180px;
     }
   }
-  .spinner-padding{
+  .spinner-padding {
     transform: translate(0px, 10px);
   }
-
 }
 @media (max-width: 360px) {
-  .backgroundFrame{
+  .backgroundFrame {
     width: 100%;
     background: unset;
   }
-  .navigator{
+  .navigator {
     position: relative;
     width: 320px;
-    .back{
+    .back {
       width: 60px;
     }
   }
-  .header2{
+  .header2 {
     transform: translate(0px, -20px);
-    img{
+    img {
       width: 160px;
     }
   }
-  .spinner-padding{
+  .spinner-padding {
     transform: translate(0px, 0px);
   }
-
 }
 </style>
-
