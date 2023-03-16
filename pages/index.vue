@@ -9,7 +9,7 @@
             <a :href="redirex" v-if="free_spin == 0">
               <img
                 :src="require('~/assets/FT-icon-back-arrow.png')"
-                class="back"
+                class="back backbtn"
                 @click="redirex"
               />
             </a>
@@ -115,7 +115,7 @@ export default {
           loop: true
         }
       },
-      amount: 200,
+      amount: 0,
       status: 0,
       bycredit_amoun: 0,
       buy_feature: false,
@@ -239,6 +239,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.backbtn {
+  position: absolute;
+  cursor: pointer;
+}
 .backgroundFrame {
   width: 600px;
   height: 100vh;
@@ -301,7 +305,8 @@ export default {
   position: relative;
   z-index: 1000;
   img {
-    width: 300px;
+    width: 260px;
+    margin-bottom: 10px;
   }
 }
 
@@ -354,14 +359,14 @@ export default {
 
 @media (max-width: 1400px) {
   .navigator {
-    width: 450px;
+    width: 510px;
     .back {
       width: 60px;
     }
   }
   .header {
     img {
-      width: 300px;
+      width: 250px;
     }
   }
   .spinner-padding {
@@ -371,14 +376,14 @@ export default {
 
 @media (max-width: 1024px) {
   .navigator {
-    width: 450px;
+    width: 510px;
     .back {
-      width: 60px;
+      width: 50px;
     }
   }
   .header2 {
     img {
-      width: 280px;
+      width: 220px;
     }
   }
   .spinner-padding {

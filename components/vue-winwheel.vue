@@ -1,7 +1,21 @@
 <template>
   <section class="vue-winwheel-component">
     <div class="mobile-container">
-      <!-- <h1>Vue-Winwheel</h1> -->
+      <img
+        class="btn_sound"
+        :src="require('~/assets/volume.png')"
+        style="width=35px; height: 35px;"
+        @click="tougleSound()"
+        v-if="!muteSound"
+      />
+      <img
+        class="btn_sound"
+        :src="require('~/assets/volume-mute.png')"
+        style="width=35px; height: 35px;"
+        alt="spin button"
+        v-else
+        @click="tougleSound()"
+      />
 
       <div class="wheel-wrapper">
         <div class="canvas-wrapper">
@@ -38,6 +52,7 @@
           <div class="spin_button" v-if="smallerThanIPAD && !verySmallPhone">
             <img
               :src="require('~/assets/BTN-spin.png')"
+              class=" spiner"
               alt="spin button"
               v-if="freespin != 0"
               @click="startSpin"
@@ -45,6 +60,7 @@
             <img
               :src="require('~/assets/BTN-non-spin.png')"
               style="width=100%; height:auto;"
+              class=" spiner"
               alt="spin button"
               v-if="freespin == 0"
             />
@@ -153,6 +169,7 @@
       hide-footer
       hide-header
       centered
+      no-close-on-backdrop
       modal-class="modal_buy_fail"
       id=""
     >
@@ -249,16 +266,25 @@
       ref="modal_before"
       hide-footer
       hide-header
-      modal-class="modal-bg modal_before modal-dialog-centered"
+      modal-class=" modal-bg modal_before modal-dialog-centered"
       id=""
     >
       <div class="bg_modal">
         <div class="d-block text-center">
-          <h3 class="px-4">
-            กดคลิกที่ปุ่ม SPIN! เพื่อเริ่มปั่นกงล้อ รับเครดิตฟรี 24 ชม.
-          </h3>
+          <img
+            class="img-fluid img_welcome"
+            :src="require('~/assets/motion-lucky-spin.png')"
+          />
           <!--  -->
-          <b-button variant="success" @click="hideModal">OK</b-button>
+          <div class="d-flex justify-content-center">
+            <img
+              class="btn_class btn_welcome"
+              @click="hideModal"
+              :src="require('~/assets/btn-start.png')"
+              alt=""
+            />
+          </div>
+
           <!-- @click.prevent="playSound('http://localhost:8001/static/alberta.mp3')" -->
         </div>
       </div>
@@ -328,7 +354,7 @@ export default {
     },
     redirex: "",
     freespin: {
-      default() {
+      decheckbuySpinfault() {
         return "";
       }
     },
@@ -343,6 +369,8 @@ export default {
   },
   data() {
     return {
+      muteSound: false,
+      checkbuySpin: false,
       loadingPrize: false,
       theWheel: null,
       modalPrize: false,
@@ -400,9 +428,13 @@ export default {
       console.log(this.buyToken);
       console.log(this.buyURL);
       try {
-        let res = await this.$axios.post(this.buyURL, {
+        let { data } = await this.$axios.post(this.buyURL, {
           ref_token: this.buyToken
         });
+        console.log(data, "rsert");
+        if (data._id) {
+          this.checkbuySpin = true;
+        }
         this.$refs["modal_successful_buy"].show();
       } catch (error) {
         this.$refs["modal_fail_buy"].show();
@@ -535,17 +567,22 @@ export default {
       console.log("this.dataPost ", this.dataPost);
       // this.isLoading = true;
       await this.$axios
-        .post(this.url, this.dataPost, {
-          auth: {
-            username: "ten",
-            password: "3900"
+        .post(
+          this.url,
+          { ...this.dataPost, buy: this.checkbuySpin },
+          {
+            auth: {
+              username: "ten",
+              password: "3900"
+            }
           }
-        })
+        )
         .then(
           response => {
             // console.log("this.dataPost ",this.dataPost)
             console.log("close modal");
             console.log("response ", response);
+            this.checkbuySpin = false;
             // this.isLoading = false;
             // // remove array frist
             // this.reward.shift();
@@ -587,6 +624,14 @@ export default {
         this.sound_bg.play();
       }
     },
+    tougleSound() {
+      this.muteSound = !this.muteSound;
+      if (this.muteSound) {
+        this.sound_bg.pause();
+      } else {
+        this.sound_bg.play();
+      }
+    },
     playSoundReward() {
       this.sound_reward.pause();
       this.sound_reward.currentTime = 0;
@@ -610,7 +655,7 @@ export default {
       this.$emit("eventRefresh");
       setTimeout(() => {
         this.startSpin();
-      }, 1000);
+      }, 500);
     },
     backToBuy() {
       this.$refs["modal_fail_buy"].hide();
@@ -665,7 +710,25 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-
+.img_welcome {
+  max-width: 100%;
+  height: auto;
+  transform: scale(1.29);
+}
+.btn_welcome {
+  height: 100px;
+  width: auto;
+  bottom: 0;
+  position: absolute;
+}
+.btn_sound {
+  position: fixed;
+  right: 30px;
+  cursor: pointer;
+  bottom: 35px;
+  z-index: 999;
+  filter: invert(1);
+}
 .btn_class {
   cursor: pointer;
 }
@@ -973,7 +1036,12 @@ export default {
   width: 100%;
   margin: auto;
 }
+/deep/.modal_before .modal-content {
+  background: none;
+  background-size: 100%;
 
+  border: none;
+}
 /deep/.modal_reward .modal-content {
   background-color: inherit;
   border: inherit;
