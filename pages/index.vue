@@ -47,16 +47,14 @@
           :buyToken="this.$route.query.token"
           :buy_feature="this.buy_feature"
           :reward="this.dynamicReward"
-          :beforeSpin="beforeSpin"
-          :dataPost="this.dynamicData"
+          :dataPost="this.data_post"
           :redirex="redirex"
           :bg_wheel="this.dynamicbg_wheel"
           :status="this.dynamicStatus"
           :buy_amount="this.buy_amount"
           :freespin="this.dynamicFreespin"
-          @buy-event="refresh"
           ref="foo"
-          @eventRefresh="GetData"
+          @eventRefresh="$fetch()"
         />
       </div>
     </div>
@@ -150,18 +148,11 @@ export default {
     },
     dynamicReftoken() {
       return this.data_post.ref_token;
-    },
-    dynamicData() {
-      if (this.data_post) {
-        return this.data_post[0];
-      } else {
-        return "";
-      }
     }
   },
   beforecreated() {},
-  async created() {
-    let get = await this.GetData();
+  async fetch() {
+    await this.GetData();
     // document.querySelector("audio").play();
     // this.sendData();
   },
@@ -173,63 +164,33 @@ export default {
     async GetData() {
       try {
         const token = this.$route.query.token;
+        let data = await this.$axios.$get(
+          `${process.env.API_PROXY_URL}/api/v1/getDataByToken/${token}`
+        );
 
-        // console.log("0000 ",token);
-        var url_getdata =
-          process.env.API_PROXY_URL + "/api/v1/getDataByToken/" + token;
-
-        const data_setting = await this.$axios
-          .$get(url_getdata)
-          .catch(error => {
-            if (this.$axios.isCancel(error)) {
-              console.log("Request canceled", error);
-            } else {
-              this.$swal("ไม่สามารถ ติดต่อกับ Server ได้");
-              return false;
-            }
-          });
-        if (data_setting) {
-          //  console.log("setting =",data_setting )
-          this.bg_wheel = `${process.env.API_URL}/${data_setting["image_luckydraw"]}`;
-
-          this.options = data_setting["options"];
-          this.reward = data_setting["reward"];
-          this.data_post = data_setting["data_post"];
-          this.redirex = data_setting["callback_redirect"];
-          this.status = data_setting["status"];
-          this.free_spin = data_setting["free_spin"];
-          this.buy_feature = data_setting["buy_feature"];
-          this.amount = data_setting["amount"];
-          this.status_buy = data_setting["status_buy"];
-          this.buy_amount = data_setting["buy_amount"];
-          // setTimeout(() => this.$refs.foo.resetWheel(), 1000);
-          this.display = true;
-        } else {
-          this.display = false;
-          this.$swal("Token ถูกใช้งานแล้ว");
-          // console.log("error = " + error);
-          // this.$router.push('/')
-          return false;
-        }
+        //  console.log("setting =",data_setting )
+        this.bg_wheel = `${process.env.API_URL}/${data["image_luckydraw"]}`;
+        this.options = data.options;
+        this.reward = data.reward;
+        this.data_post = data.data_post.length > 0 ? data.data_post[0] : "";
+        this.redirex = data.callback_redirect;
+        this.status = data.status;
+        this.free_spin = data.free_spin;
+        this.buy_feature = data.buy_feature;
+        this.amount = data.amount;
+        this.status_buy = data.status_buy;
+        this.buy_amount = data.buy_amount;
+        // setTimeout(() => this.$refs.foo.resetWheel(), 1000);
+        this.display = true;
+        console.log(this.data_post, " this.data_post this.data_post");
       } catch (error) {
         this.$swal("ไม่สามารถเชื่อมต่อได้");
         console.log("error = " + error);
         // this.$router.push('/')
-        return false;
       }
     },
-    refresh() {
-      console.log("buy a spin");
-      console.log("call api");
-      console.log("refresh -> get new data");
-    },
-    beforeSpin() {
-      return new Promise((resolve, reject) => {
-        resolve(true);
-      });
-    },
+
     async sendData() {
-      let before = await this.beforeSpin();
       if (before) {
         //console.log("Spin");
       }

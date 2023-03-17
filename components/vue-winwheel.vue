@@ -38,7 +38,7 @@
               :src="require('~/assets/BTN-non-spin.png')"
               style="width=100%; height:auto;"
               alt="spin button"
-              v-if="freespin == 0"
+              v-else
             />
           </div>
           <!-- 375 > width > 768-->
@@ -54,7 +54,9 @@
               :src="require('~/assets/BTN-spin.png')"
               class=" spiner"
               alt="spin button"
-              v-if="freespin != 0"
+              v-if="
+                freespin != 0 && wheelSpinning == false && checkbuySpin == false
+              "
               @click="startSpin"
             />
             <img
@@ -62,7 +64,7 @@
               style="width=100%; height:auto;"
               class=" spiner"
               alt="spin button"
-              v-if="freespin == 0"
+              v-else
             />
           </div>
           <!-- ipad or larger screen -->
@@ -72,13 +74,15 @@
             <img
               :src="require('~/assets/BTN-spin.png')"
               alt="spin button"
-              v-if="freespin != 0"
+              v-if="
+                freespin != 0 && wheelSpinning == false && checkbuySpin == false
+              "
               @click="startSpin"
             />
             <img
               :src="require('~/assets/BTN-non-spin.png')"
               alt="spin button"
-              v-if="freespin == 0"
+              v-else
             />
           </div>
           <!-- <div style="transform: translate(0px, -250px);">middle</div> /-->
@@ -359,10 +363,6 @@ export default {
       }
     },
 
-    beforeSpin: {
-      type: Function,
-      required: true
-    },
     buy_amount: {
       tyoe: Number
     }
@@ -424,9 +424,6 @@ export default {
     },
     async buySpin() {
       this.$refs["modal_buy"].hide();
-      this.$emit("buy-event");
-      console.log(this.buyToken);
-      console.log(this.buyURL);
       try {
         let { data } = await this.$axios.post(this.buyURL, {
           ref_token: this.buyToken
@@ -435,14 +432,15 @@ export default {
         if (data._id) {
           this.checkbuySpin = true;
         }
+
         this.$refs["modal_successful_buy"].show();
       } catch (error) {
+        this.checkbuySpin = false;
         this.$refs["modal_fail_buy"].show();
       }
+      this.$emit("eventRefresh");
     },
-    beforeSpinDefault() {
-      return this.beforeSpin();
-    },
+
     async saveData() {
       const data = await this.$axios.$get(this.url);
       // console.log(data);
@@ -545,6 +543,7 @@ export default {
       this.$refs["modal_reward"].show();
     },
     closeModel() {
+      this.wheelSpinning = false;
       this.isLoading = false;
       // remove array frist
       this.reward.shift();
@@ -564,7 +563,6 @@ export default {
       this.$refs["modal_reward"].hide();
     },
     async onReceive() {
-      console.log("this.dataPost ", this.dataPost);
       // this.isLoading = true;
       await this.$axios
         .post(
@@ -651,11 +649,8 @@ export default {
       }
     },
     async refresh() {
-      this.$refs["modal_successful_buy"].hide();
-      this.$emit("eventRefresh");
-      setTimeout(() => {
-        this.startSpin();
-      }, 500);
+      await this.$refs["modal_successful_buy"].hide();
+      await this.startSpin();
     },
     backToBuy() {
       this.$refs["modal_fail_buy"].hide();

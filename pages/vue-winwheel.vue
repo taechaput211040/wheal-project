@@ -24,15 +24,15 @@
             href="#"
             @click.prevent="startSpin()"
             v-if="!loadingPrize && !wheelSpinning"
-            >SPIN!</a>
+            >SPIN!</a
+          >
 
-			<!-- <a
+          <!-- <a
             class="btn btn-play"
             href="#"
             @click.prevent="saveData()"
             v-if="!loadingPrize && !wheelSpinning"
             >saveData!</a> -->
-
         </div>
       </div>
     </div>
@@ -50,7 +50,6 @@
   </section>
 </template>
 
-
 <script>
 import * as Winwheel from "~/node_modules/vue-winwheel/Winwheel.js";
 
@@ -58,7 +57,7 @@ export default {
   name: "VueWinWheel",
   props: {
     segments: {
-      type:Array,
+      type: Array
       // default() {
       //   return [
       //     {
@@ -107,17 +106,17 @@ export default {
     score: {
       default() {
         return 30;
-      },
+      }
     },
-	url: {
+    url: {
       default() {
         return "www.hotmail.com";
-      },
+      }
     },
     beforeSpin: {
       type: Function,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
@@ -134,9 +133,9 @@ export default {
         lineWidth: 8,
         animation: {
           type: "spinOngoing",
-          duration: 0.5,
-        },
-      },
+          duration: 0.5
+        }
+      }
     };
   },
   methods: {
@@ -146,53 +145,49 @@ export default {
     hidePrize() {
       this.modalPrize = false;
     },
-    beforeSpinDefault() {
-      return this.beforeSpin();
-    },
-	async saveData() {
+
+    async saveData() {
       const data = await this.$axios.$get(this.url);
-      console.log(data)
+      console.log(data);
     },
     startSpin() {
-      this.beforeSpinDefault().then((result) => {
-        if (this.wheelSpinning === false) {
-          this.theWheel.startAnimation();
-          this.wheelSpinning = true;
-          this.theWheel = new Winwheel.Winwheel({
-            ...this.WinWheelOptions,
-            numSegments: this.segments.length,
-            segments: this.segments,
-			// drawMode: 'segmentImage',
-            animation: {
-              type: "spinToStop",
-              duration: 5,
-              spins: 5,
-              callbackFinished: this.onFinishSpin,
-            },
-          });
+      if (this.wheelSpinning === false) {
+        this.theWheel.startAnimation();
+        this.wheelSpinning = true;
+        this.theWheel = new Winwheel.Winwheel({
+          ...this.WinWheelOptions,
+          numSegments: this.segments.length,
+          segments: this.segments,
+          // drawMode: 'segmentImage',
+          animation: {
+            type: "spinToStop",
+            duration: 5,
+            spins: 5,
+            callbackFinished: this.onFinishSpin
+          }
+        });
 
-          // example input prize number get from Backend
-          // Important thing is to set the stopAngle of the animation before stating the spin.
+        // example input prize number get from Backend
+        // Important thing is to set the stopAngle of the animation before stating the spin.
 
-          var prizeNumber = Math.floor(Math.random() * this.segments.length); // or just get from Backend
-          var stopAt =
-            (360 / this.segments.length) * prizeNumber -
-            360 / this.segments.length / 2; // center pin
-          // var stopAt = 360 / this.segments.length * prizeNumber - Math.floor(Math.random() * 60) //random location
+        var prizeNumber = Math.floor(Math.random() * this.segments.length); // or just get from Backend
+        var stopAt =
+          (360 / this.segments.length) * prizeNumber -
+          360 / this.segments.length / 2; // center pin
+        // var stopAt = 360 / this.segments.length * prizeNumber - Math.floor(Math.random() * 60) //random location
 
-          console.log("stopAt = " + JSON.stringify(this.score));
-          this.theWheel.animation.stopAngle = this.score;
-          this.theWheel.startAnimation();
-          this.wheelSpinning = false;
-        }
-      });
+        console.log("stopAt = " + JSON.stringify(this.score));
+        this.theWheel.animation.stopAngle = this.score;
+        this.theWheel.startAnimation();
+        this.wheelSpinning = false;
+      }
     },
     resetWheel() {
       this.theWheel = new Winwheel.Winwheel({
         ...this.WinWheelOptions,
         numSegments: this.segments.length,
-        segments: this.segments,
-		// drawMode: 'segmentImage',
+        segments: this.segments
+        // drawMode: 'segmentImage',
       });
 
       if (this.wheelSpinning) {
@@ -211,7 +206,7 @@ export default {
     onFinishSpin(indicatedSegment) {
       this.prizeName = indicatedSegment.text;
       this.showPrize();
-    },
+    }
   },
   computed: {},
   updated() {},
@@ -220,9 +215,8 @@ export default {
     // this.resetWheel()
   },
   created() {
-	setTimeout(() => this.resetWheel(), 1500);
-    
-  },
+    setTimeout(() => this.resetWheel(), 1500);
+  }
 };
 </script>
 
