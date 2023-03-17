@@ -277,7 +277,7 @@
         <div class="d-block text-center">
           <img
             class="img-fluid img_welcome"
-            :src="require('~/assets/motion-lucky-spin.png')"
+            :src="require('~/assets/ezgif.com-gif-maker.webp')"
           />
           <!--  -->
           <div class="d-flex justify-content-center">
